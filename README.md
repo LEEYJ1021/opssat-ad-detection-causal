@@ -74,7 +74,7 @@ opssat-ad-detection-causal/
 ├── README.md                              # this file — full methodology + inline figures
 ├── LICENSE
 ├── CITATION.cff
-├── requirements.txt / environment.yml
+├── requirements.txt
 ├── Makefile                               # `make all` reproduces every figure/table below
 │
 ├── data/
@@ -163,18 +163,15 @@ opssat-ad-detection-causal/
 │   ├── 03_causal_signature_walkthrough.ipynb
 │   └── 04_model_cross_validation_walkthrough.ipynb
 │
-├── docs/
-│   ├── dev-log/                           # raw, unabridged research log (see note below)
-│   │   ├── step1_signal_estimation.md
-│   │   ├── step2_anomaly_detection.md
-│   │   ├── step3_causal_analysis.md
-│   │   ├── step3b_labeling_protocol_revalidation.md
-│   │   └── step_ai_model_cross_validation.md
-│   ├── METHODS_SUPPLEMENT.md               # manuscript-ready extended methods (mirrors README §5)
-│   └── REPRODUCIBILITY_CHECKLIST.md
-│
-└── .github/workflows/
-    └── reproduce.yml                       # CI: regenerates all figures from source data on every push
+└── docs/
+    ├── dev-log/                           # raw, unabridged research log (see note below)
+    │   ├── step1_signal_estimation.md
+    │   ├── step2_anomaly_detection.md
+    │   ├── step3_causal_analysis.md
+    │   ├── step3b_labeling_protocol_revalidation.md
+    │   └── step_ai_model_cross_validation.md
+    ├── METHODS_SUPPLEMENT.md               # manuscript-ready extended methods (mirrors README §5)
+    └── REPRODUCIBILITY_CHECKLIST.md
 ```
 
 > **Note on `docs/dev-log/`.** These files are the original, conversational research logs kept during development. They are included **verbatim** for full analytical transparency (a reviewer or replicator can see every dead end, discarded ablation, and correction as it happened) but are explicitly **not** the manuscript's Methods section — the polished, publication-ready methodology is what appears in this README and in `docs/METHODS_SUPPLEMENT.md`.
