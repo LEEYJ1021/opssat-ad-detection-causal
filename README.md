@@ -157,12 +157,6 @@ opssat-ad-detection-causal/
 │   │   └── fig05_dataset_and_precedence.png / .py
 │   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above
 │
-├── notebooks/
-│   ├── 01_exploratory_data_analysis.ipynb
-│   ├── 02_channel_scoping_walkthrough.ipynb
-│   ├── 03_causal_signature_walkthrough.ipynb
-│   └── 04_model_cross_validation_walkthrough.ipynb
-│
 └── docs/
     ├── dev-log/                           # raw, unabridged research log (see note below)
     │   ├── step1_signal_estimation.md
