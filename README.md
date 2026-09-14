@@ -133,6 +133,7 @@ opssat-ad-detection-causal/
 │   └── run_all.py                         # entry point: `python -m model_cross_validation.run_all`
 │
 ├── results/
+│   ├── README.md
 │   ├── layer1/
 │   │   ├── noise_estimates.csv
 │   │   └── channel_classification.json
