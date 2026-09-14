@@ -1,0 +1,5 @@
+use_mixture,use_forgetting,train_macro_mcc,n_scoring_channels
+False,False,0.2382,6
+False,True,0.308,6
+True,False,0.1992,6
+True,True,0.275,6

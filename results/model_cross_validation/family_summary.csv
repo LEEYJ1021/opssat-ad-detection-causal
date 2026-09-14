@@ -1,0 +1,14 @@
+family,n_models,mean_level,mean_diff,mean_diff2,diff_plus_diff2_beats_level
+Linear,1,0.060,0.407,0.534,True
+Linear (sparse),1,0.057,0.412,0.531,True
+Probabilistic,1,0.051,0.446,0.503,True
+Instance-based,1,0.129,0.391,0.480,True
+Kernel,1,0.061,0.466,0.472,True
+Tree ensemble (bagging),1,0.084,0.456,0.460,True
+Tree ensemble (bagging extra),1,0.145,0.389,0.466,True
+Tree ensemble (boosting),3,0.149,0.416,0.434,True
+Convolutional,1,0.303,0.301,0.396,True
+Convolutional (dilated causal),1,0.200,0.380,0.419,True
+Recurrent,2,0.248,0.443,0.310,True
+Attention,1,0.178,0.438,0.384,True
+State-space (SSM),1,0.428,0.441,0.130,True (narrowest margin)

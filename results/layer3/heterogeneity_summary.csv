@@ -1,0 +1,7 @@
+outcome,feature,k_channels,pooled_estimate,ci_low,ci_high,p_bonferroni,I2_pct,Q_test_p
+effect_size_abs_d,level,5,1.128,0.925,1.331,~0,65.7,0.0202
+effect_size_abs_d,diff,5,0.283,0.158,0.408,~0,97.2,0.0001
+effect_size_abs_d,diff2,5,0.317,0.220,0.415,~0,93.8,2.6e-13
+significance_fraction,level,5,0.928,0.805,0.993,~0,82.8,1.1e-04
+significance_fraction,diff,5,0.100,0.007,0.278,0.022,93.8,3.2e-13
+significance_fraction,diff2,5,0.133,0.013,0.348,0.014,92.2,1.9e-10

@@ -1,0 +1,10 @@
+channel,include_in_stage2,scope_reason_final
+CADC0872,True,포함
+CADC0873,True,포함
+CADC0874,True,포함
+CADC0884,False,구조적 제외 (anomaly=0)
+CADC0886,False,"표본부족 (n_anom=3, n_norm=8)"
+CADC0888,True,포함
+CADC0890,False,"표본부족 (n_anom=11, n_norm=3) + test 정상 표본=0으로 재확인 (기존 제외 판정 강화, 번복 아님)"
+CADC0892,False,우연수준 이하 (MCC<=0)
+CADC0894,True,포함

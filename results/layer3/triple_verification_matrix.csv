@@ -1,0 +1,16 @@
+channel,feature,sig_full,sig_train,sig_test,p_bonferroni_full,p_bonferroni_train,p_bonferroni_test,all_three_agree
+CADC0872,level,False,False,False,1.000000,1.000000,1.000000,True
+CADC0872,diff,True,True,True,7.882301e-24,1.216528e-16,9.582747e-08,True
+CADC0872,diff2,True,True,True,1.112030e-22,3.730367e-17,1.228435e-06,True
+CADC0873,level,False,False,False,1.000000,1.000000,1.000000,True
+CADC0873,diff,True,True,True,2.414695e-17,1.122037e-12,3.457537e-05,True
+CADC0873,diff2,True,True,True,3.062400e-16,7.222520e-12,3.457537e-05,True
+CADC0874,level,False,False,False,1.000000,1.000000,1.000000,True
+CADC0874,diff,True,True,True,5.399267e-16,1.165060e-09,1.052634e-08,True
+CADC0874,diff2,True,True,True,2.892821e-22,9.322895e-14,2.618305e-09,True
+CADC0888,level,False,False,False,1.000000,1.000000,1.000000,True
+CADC0888,diff,True,True,False,6.932708e-06,4.487405e-04,5.145962e-02,False
+CADC0888,diff2,True,True,True,3.264654e-13,1.554377e-09,1.511310e-03,True
+CADC0894,level,False,False,False,1.000000,1.000000,1.000000,True
+CADC0894,diff,True,True,,3.895568e-06,1.449169e-04,,
+CADC0894,diff2,True,True,,1.944752e-04,1.215226e-03,,

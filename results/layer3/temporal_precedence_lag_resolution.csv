@@ -1,0 +1,4 @@
+test,n,median_lag,frac_diff_leads,frac_diff2_leads,p_value,p_value_note
+anomalous_lag_vs_zero,168,0.0,0.405,0.101,0.00094,0.0028 after Bonferroni
+normal_lag_vs_zero,702,0.0,0.454,0.312,0.033,0.098 after Bonferroni
+anomalous_vs_normal_lag_distributions,168_vs_702,,,,0.906,Mann-Whitney U on lag distributions

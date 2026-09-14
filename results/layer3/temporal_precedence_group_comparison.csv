@@ -1,0 +1,4 @@
+comparison,anomalous_frac,anomalous_n,normal_frac,normal_n,odds_ratio,p_fisher_bonferroni,cmh_chi2,cmh_p_bonferroni,cmh_odds_ratio
+level_precedes_diff,0.157,70,0.558,224,0.148,4.68e-09,44.03,9.72e-11,0.095
+level_precedes_diff2,0.171,70,0.743,171,0.072,8.48e-16,63.70,4.33e-15,0.067
+diff_precedes_diff2,0.075,161,0.645,211,0.044,3.18e-31,114.57,0.0,0.058

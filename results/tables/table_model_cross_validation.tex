@@ -1,0 +1,23 @@
+% 16-model feature-attribution table -- underlies README Table 2 / Fig. 2
+\begin{tabular}{llrrrr}
+\toprule
+Model & Family & AUC & level & diff & diff$^2$ \\
+\midrule
+TinyTransformer & Attention & 0.994000 & 0.178000 & 0.438000 & 0.384000 \\
+TCN & Convolutional (dilated causal) & 0.993000 & 0.200000 & 0.380000 & 0.419000 \\
+BiGRU & Recurrent & 0.989000 & 0.285000 & 0.388000 & 0.327000 \\
+CNN1D & Convolutional & 0.983000 & 0.303000 & 0.301000 & 0.396000 \\
+BiLSTM & Recurrent & 0.980000 & 0.211000 & 0.497000 & 0.292000 \\
+LightMamba & State-space (SSM) & 0.969000 & 0.428000 & 0.441000 & 0.130000 \\
+SVM_RBF & Kernel & 0.948000 & 0.061000 & 0.466000 & 0.472000 \\
+LightGBM & Tree ensemble (boosting) & 0.940000 & 0.232000 & 0.459000 & 0.309000 \\
+XGBoost & Tree ensemble (boosting) & 0.935000 & 0.148000 & 0.419000 & 0.433000 \\
+RandomForest & Tree ensemble (bagging) & 0.931000 & 0.084000 & 0.456000 & 0.460000 \\
+ExtraTrees & Tree ensemble (bagging extra) & 0.927000 & 0.145000 & 0.389000 & 0.466000 \\
+GradBoost_sklearn & Tree ensemble (boosting) & 0.924000 & 0.068000 & 0.371000 & 0.561000 \\
+LogReg_L2 & Linear & 0.920000 & 0.060000 & 0.407000 & 0.534000 \\
+LogReg_L1 & Linear (sparse) & 0.920000 & 0.057000 & 0.412000 & 0.531000 \\
+kNN & Instance-based & 0.918000 & 0.129000 & 0.391000 & 0.480000 \\
+GaussianNB & Probabilistic & 0.900000 & 0.051000 & 0.446000 & 0.503000 \\
+\bottomrule
+\end{tabular}

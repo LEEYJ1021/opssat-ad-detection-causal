@@ -1,0 +1,10 @@
+channel,channel_type,recall,false_alarm_rate,mcc,youden_j,scope_reason,include_in_stage2
+CADC0872,float_noise_suspect,0.320611,0.0,0.5138046225235745,0.320611,포함,True
+CADC0873,float_noise_suspect,0.27619,0.0,0.48884853136311957,0.27619,포함,True
+CADC0874,float_noise_suspect,0.724638,0.032,0.7398180350783027,0.692638,포함,True
+CADC0884,quantized,,0.240506,,,구조적 제외 (anomaly=0),False
+CADC0886,quantized,0.0,0.0,0.0,0.0,"표본부족 (n_anom=3, n_norm=8)",False
+CADC0888,quantized,0.616667,0.390625,0.19375028225446173,0.22604199999999997,포함,True
+CADC0890,continuous,0.909091,0.0,0.8257229683462881,0.909091,"표본부족 (n_anom=11, n_norm=3)",False
+CADC0892,quantized,0.970588,0.99435,-0.09016016658007926,-0.02376199999999995,우연수준 이하 (MCC<=0),False
+CADC0894,quantized,1.0,0.796748,0.18938848643556175,0.203252,포함,True

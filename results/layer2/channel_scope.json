@@ -1,0 +1,121 @@
+{
+  "included_channels": [
+    "CADC0872",
+    "CADC0873",
+    "CADC0874",
+    "CADC0888",
+    "CADC0894"
+  ],
+  "excluded_channels": {
+    "CADC0884": "구조적 제외 (anomaly=0)",
+    "CADC0886": "표본부족 (n_anom=3, n_norm=8)",
+    "CADC0890": "표본부족 (n_anom=11, n_norm=3)",
+    "CADC0892": "우연수준 이하 (MCC<=0)"
+  },
+  "n_included": 5,
+  "n_total": 9,
+  "decision_table": [
+    {
+      "channel": "CADC0872",
+      "channel_type": "float_noise_suspect",
+      "recall": 0.320611,
+      "false_alarm_rate": 0.0,
+      "mcc": 0.5138046225235745,
+      "youden_j": 0.320611,
+      "scope_reason": "포함",
+      "include_in_stage2": true
+    },
+    {
+      "channel": "CADC0873",
+      "channel_type": "float_noise_suspect",
+      "recall": 0.27619,
+      "false_alarm_rate": 0.0,
+      "mcc": 0.48884853136311957,
+      "youden_j": 0.27619,
+      "scope_reason": "포함",
+      "include_in_stage2": true
+    },
+    {
+      "channel": "CADC0874",
+      "channel_type": "float_noise_suspect",
+      "recall": 0.724638,
+      "false_alarm_rate": 0.032,
+      "mcc": 0.7398180350783027,
+      "youden_j": 0.692638,
+      "scope_reason": "포함",
+      "include_in_stage2": true
+    },
+    {
+      "channel": "CADC0884",
+      "channel_type": "quantized",
+      "recall": NaN,
+      "false_alarm_rate": 0.240506,
+      "mcc": NaN,
+      "youden_j": NaN,
+      "scope_reason": "구조적 제외 (anomaly=0)",
+      "include_in_stage2": false
+    },
+    {
+      "channel": "CADC0886",
+      "channel_type": "quantized",
+      "recall": 0.0,
+      "false_alarm_rate": 0.0,
+      "mcc": 0.0,
+      "youden_j": 0.0,
+      "scope_reason": "표본부족 (n_anom=3, n_norm=8)",
+      "include_in_stage2": false
+    },
+    {
+      "channel": "CADC0888",
+      "channel_type": "quantized",
+      "recall": 0.616667,
+      "false_alarm_rate": 0.390625,
+      "mcc": 0.19375028225446173,
+      "youden_j": 0.22604199999999997,
+      "scope_reason": "포함",
+      "include_in_stage2": true
+    },
+    {
+      "channel": "CADC0890",
+      "channel_type": "continuous",
+      "recall": 0.909091,
+      "false_alarm_rate": 0.0,
+      "mcc": 0.8257229683462881,
+      "youden_j": 0.909091,
+      "scope_reason": "표본부족 (n_anom=11, n_norm=3)",
+      "include_in_stage2": false
+    },
+    {
+      "channel": "CADC0892",
+      "channel_type": "quantized",
+      "recall": 0.970588,
+      "false_alarm_rate": 0.99435,
+      "mcc": -0.09016016658007926,
+      "youden_j": -0.02376199999999995,
+      "scope_reason": "우연수준 이하 (MCC<=0)",
+      "include_in_stage2": false
+    },
+    {
+      "channel": "CADC0894",
+      "channel_type": "quantized",
+      "recall": 1.0,
+      "false_alarm_rate": 0.796748,
+      "mcc": 0.18938848643556175,
+      "youden_j": 0.203252,
+      "scope_reason": "포함",
+      "include_in_stage2": true
+    }
+  ],
+  "locked_scope_reasons": {
+    "CADC0872": "포함",
+    "CADC0873": "포함",
+    "CADC0874": "포함",
+    "CADC0884": "구조적 제외 (anomaly=0)",
+    "CADC0886": "표본부족 (n_anom=3, n_norm=8)",
+    "CADC0888": "포함",
+    "CADC0890": "표본부족 (n_anom=11, n_norm=3) + test 정상 표본=0으로 재확인 (기존 제외 판정 강화, 번복 아님)",
+    "CADC0892": "우연수준 이하 (MCC<=0)",
+    "CADC0894": "포함"
+  },
+  "source": "OPS-SAT-AD segments.csv (9 channels, 2,123 labeled segments); locked params: mixture=False, forgetting=True"
+}

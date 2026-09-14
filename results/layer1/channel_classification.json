@@ -1,0 +1,30 @@
+{
+  "classification_rule": {
+    "quantized": "fraction of exact-zero first differences >= 0.10 (within nominal segments); quantization step = 25th percentile of non-zero |diff|",
+    "float_noise_suspect": "not quantized, and smallest non-zero |diff| < 1e-6",
+    "continuous": "otherwise",
+    "note": "thresholds set from inspection of this dataset's empirical difference distributions; not derived from first principles"
+  },
+  "noise_estimator": {
+    "chosen": "naive: r = Var(diff)/2, q = Var(diff^2)/6",
+    "rejected_alternative": "Gaussian-mixture (jump-probability x jump-size MAD) estimator",
+    "rejection_reason": "MAD collapses to zero on zero-inflated (quantized) channels when applied to the full difference distribution; restricting to non-zero jumps avoids the collapse but inflates steady-state standardized-innovation SD to 2.25-2.88 (should be ~1) on CADC0890/CADC0894, vs. 0.95-0.98 under the naive estimator"
+  },
+  "quantization_floor": "for quantized channels, step^2/12 (variance of Uniform(-step/2, step/2)) added to observation-noise variance r",
+  "hierarchical_shrinkage": {
+    "method": "Efron-Morris-type empirical-Bayes shrinkage on log(r), log(q) across channels",
+    "stabilizes": ["CADC0886 (n=8 nominal segments)", "CADC0890 (n=3 nominal segments)"]
+  },
+  "per_channel": {
+    "CADC0872": {"type": "float_noise_suspect", "frac_zero_diff": 0.053, "quantization_step": null},
+    "CADC0873": {"type": "float_noise_suspect", "frac_zero_diff": 0.052, "quantization_step": null},
+    "CADC0874": {"type": "float_noise_suspect", "frac_zero_diff": 0.044, "quantization_step": null},
+    "CADC0884": {"type": "quantized", "frac_zero_diff": 0.183, "quantization_step": 0.0144},
+    "CADC0886": {"type": "quantized", "frac_zero_diff": 0.371, "quantization_step": 0.0274},
+    "CADC0888": {"type": "quantized", "frac_zero_diff": 0.354, "quantization_step": 0.0144},
+    "CADC0890": {"type": "continuous", "frac_zero_diff": 0.083, "quantization_step": null},
+    "CADC0892": {"type": "quantized", "frac_zero_diff": 0.416, "quantization_step": 0.0054},
+    "CADC0894": {"type": "quantized", "frac_zero_diff": 0.583, "quantization_step": 0.0026}
+  },
+  "source": "docs/dev-log/step1_signal_estimation.md, Sec. 1 and 4"
+}

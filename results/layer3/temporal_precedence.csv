@@ -1,0 +1,4 @@
+comparison,n_pairs,median_delta_t_sec,p_wilcoxon,frac_first_precedes_second,note
+level_vs_diff,70,0.0,1.4e-05,0.157,diff precedes level in 84.3% of pairs
+level_vs_diff2,70,0.0,3.2e-05,0.171,diff2 precedes level in 82.9% of pairs
+diff_vs_diff2,161,0.0,0.368,,n.s. at 1-5s sampling resolution; resolved via cross-correlation lag test

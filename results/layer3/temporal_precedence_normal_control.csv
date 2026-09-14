@@ -1,0 +1,7 @@
+comparison,regime,n_pairs,frac_first_precedes_second
+level_vs_diff,normal,224,0.558
+level_vs_diff,anomalous,70,0.157
+level_vs_diff2,normal,171,0.743
+level_vs_diff2,anomalous,70,0.171
+diff_vs_diff2,normal,211,0.645
+diff_vs_diff2,anomalous,161,0.075

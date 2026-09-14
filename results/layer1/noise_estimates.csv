@@ -1,0 +1,10 @@
+channel,channel_type,frac_zero_diff,quantization_step,r_robust,q_robust
+CADC0872,float_noise_suspect,0.053,,2.65e-12,4.83e-13
+CADC0873,float_noise_suspect,0.052,,2.51e-12,2.94e-13
+CADC0874,float_noise_suspect,0.044,,8.02e-13,2.73e-13
+CADC0884,quantized,0.183,0.0144,4.86e-04,2.83e-05
+CADC0886,quantized,0.371,0.0274,1.33e-03,7.37e-05
+CADC0888,quantized,0.354,0.0144,1.28e-03,8.23e-05
+CADC0890,continuous,0.083,,2.32e-03,2.69e-04
+CADC0892,quantized,0.416,0.0054,1.51e-04,3.79e-05
+CADC0894,quantized,0.583,0.0026,1.33e-04,1.42e-05
