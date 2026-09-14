@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite the associated paper."
+title: "The Causal Signature of Telemetry Anomalies in OPS-SAT-AD"
+authors:
+  - family-names: "TODO"
+    given-names: "TODO"
+date-released: "2026-01-01"
+version: "1.0.0"
+repository-code: "https://github.com/USERNAME/opssat-ad-detection-causal"
