@@ -38,7 +38,7 @@ Per-channel MCC across all four combinations (channel-type in parentheses):
 | CADC0874 | 0.740 (tie) | 0.740 | 0.521 | 0.521 | float_noise_suspect |
 | CADC0888 | 0.194 (tie) | 0.107 | 0.107 | 0.194 | quantized |
 | CADC0890 | 0.826 (tie) | −0.213 | −0.213 | 0.826 | continuous |
-| CADC0892 | −0.090 (best, still <0) | −0.158 | −0.223 | −0.090 | quantized |
+| CADC0892 | −0.090 (best, still <0; tie with mix=F,forget=F) | −0.158 | −0.223 | −0.090 | quantized |
 | CADC0894 | 0.189 | 0.086 | 0.096 | **0.203** | quantized |
 
 **Locked configuration:** `mixture = False`, `forgetting = True`. It is at or within ≈ 0.014 (≈ 7%) of the best combination for every channel except CADC0894 (where the margin to the single best is 0.014), and either substantially underperforms or inverts sign for CADC0872 and CADC0890 under alternative combinations. Treated as Pareto-near-optimal, not uniquely optimal for every channel — reported explicitly rather than concealed.
