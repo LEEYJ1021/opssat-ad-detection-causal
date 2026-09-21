@@ -11,9 +11,11 @@
 >
 > Measured as onset-vs-placebo AUROC with **cluster-bootstrap confidence intervals** (the unit of resampling is the segment for OPS-SAT-AD, the channel for SMAP/MSL, and the machine for SMD, so that repeated or non-independent pairs do not inflate significance), the advantage is **Δ(diff − level) AUROC = +0.462 [0.409, 0.508]** in OPS-SAT-AD, **+0.122 [0.045, 0.196]** in SMAP/MSL, and **+0.042 [0.016, 0.066]** in SMD. SMAP/MSL and SMD have **ground-truth anomaly onsets**, so this directional result does not depend on an onset estimator. Adding `level` to `diff`/`diff²` in an out-of-fold logistic model provides essentially **no incremental discrimination** (ΔAUROC between −0.001 and −0.007 across datasets; Tier-1 evidence in §11).
 >
+> Because OPS-SAT-AD has only K = 5 channels, the segment-level intervals were re-estimated with resampling at the channel level (two-level bootstrap, wild cluster bootstrap, exact sign-flip enumeration; Table R7, §11.3). **The direction and size of both OPS-SAT-AD contrasts are unchanged across all schemes** (e.g., Δ(diff − level) [0.282, 0.593] under the two-level bootstrap), but with K = 5 no exact test can reject at α = 0.05 (2⁵ = 32 sign patterns; minimum two-sided p = 0.0625), so the OPS-SAT-AD contrasts are read as evidence on **direction and magnitude, not as formal tests**. Leave-one-channel-out fits keep the sign of both contrasts in every fit (Table R7c).
+>
 > A normal-segment control decomposes `diff`-first onset ordering into an **operator-level baseline** (the effect of differencing on local disturbances) and an **anomaly-attributable increment**. The increment is positive in every dataset—+40.1 percentage points (pp) in OPS-SAT-AD, +11.0 pp in SMAP/MSL, and +3.9 pp in SMD—but a re-designed synthetic-data check (§11.6) shows that a plain AR(1)+slow-drift generator reproduces the *direction* of this baseline gradient (Spearman ρ = 0.86 with autocorrelation, p < 0.001) without reproducing its *magnitude* (simulated baselines top out at 39.7%, versus 44–73% observed). We therefore treat the baseline decomposition as a **calibration tool**, not as evidence of a specific mechanism.
 >
-> At a matched false-alarm rate, the operational gain from adding derivative features is measurable but **modest**: in SMD, a `level OR diff OR diff²` fusion rule raises coverage at 5% FAR from 15.9% (level alone) to 17.2%, a **+1.2 pp [0.4, 2.2]** cluster-bootstrap gain; a single derivative feature alone does not reach significance at this FAR (§11.4). In OPS-SAT-AD, pooled `level` shows no positive discrimination (AUROC 0.438 [0.401, 0.477]) and is significantly reversed in one channel (CADC0873, AUROC 0.289, two-sided cluster p = 0.002); the cause is investigated and partially, but not fully, explained (§11.5). We therefore interpret the findings as an **associational, direction-level result with a modest, quantified incremental value**, rather than evidence of a universally superior detector, a demonstrated causal mechanism, or a general instrument-physics effect.
+> At a matched false-alarm rate, the operational gain from adding derivative features is measurable but **modest**: in SMD, a `level OR diff OR diff²` fusion rule raises coverage at 5% FAR from 15.9% (level alone) to 17.2%, a **+1.2 pp [0.4, 2.2]** cluster-bootstrap gain; a single derivative feature alone does not reach significance at this FAR (§11.4). In OPS-SAT-AD, pooled `level` shows no positive discrimination (AUROC 0.438; segment-level interval [0.401, 0.477]). **This pooled reversal is not robust to channel-level resampling**: the two-level, wild-cluster and exact-enumeration intervals all include 0.5 (e.g., [0.350, 0.543] two-level; Table R7b), and pooled `level` moves toward 0.5 only when channel CADC0873 is removed (Table R7c). The reading is therefore *inconclusive for pooled `level`*, not evidence of no discrimination. A separate **within-channel** reversal in CADC0873 (AUROC 0.289, segment-cluster two-sided p ≤ 0.002) was not re-tested at the channel level; its cause is investigated and partially, but not fully, explained (§11.5). We therefore interpret the findings as an **associational, direction-level result with a modest, quantified incremental value**, rather than evidence of a universally superior detector, a demonstrated causal mechanism, or a general instrument-physics effect.
 
 This repository is the code, data-provenance and figure-reproduction companion to **Paper 1** of a two-paper series built primarily on OPS-SAT-AD, with independent generalization testing on SMAP/MSL and SMD. It is **self-contained and independently evaluable** and does not depend on any other repository.
 
@@ -61,17 +63,17 @@ This repository is the code, data-provenance and figure-reproduction companion t
 
 **The question.** Change-point and anomaly-detection pipelines for spacecraft and industrial telemetry treat a level shift as the default anomaly signature: it is the easiest thing to visualize, the easiest to threshold, and the default target of textbook change-point models. Which feature should an alarm actually be built on?
 
-**The answer this study provides.** Across three benchmarks that differ in platform, sensor physics, labeling protocol and onset provenance, variance surges in the first and second differences carry more placebo-separating information at labeled anomaly onsets than level does. Cluster-bootstrap re-analysis (§11) confirms this direction on a resampling unit that respects each dataset's dependence structure (segment / channel / machine), and quantifies the operational, false-alarm-matched value of adding derivative features as real but modest.
+**The answer this study provides.** Across three benchmarks that differ in platform, sensor physics, labeling protocol and onset provenance, variance surges in the first and second differences carry more placebo-separating information at labeled anomaly onsets than level does. Cluster-bootstrap re-analysis (§11) confirms this direction on a resampling unit that respects each dataset's dependence structure (segment / channel / machine), confirms that the OPS-SAT-AD direction survives channel-level resampling with K = 5 (Table R7), and quantifies the operational, false-alarm-matched value of adding derivative features as real but modest.
 
 **Seven contributions.**
 
 1. **A cross-dataset design rule with an estimator-free direction.** `diff`/`diff²` variance features separate onsets from placebo more strongly than `level` in 3/3 datasets. In the two datasets with ground-truth onsets (SMAP/MSL, SMD) the direction holds without any onset estimator (Table 12, Fig. 6).
-2. **A cluster-robust, dependence-aware quantification of that gap.** ΔAUROC(diff − level) = +0.462 [0.409, 0.508] (OPS-SAT-AD, segment clusters), +0.122 [0.045, 0.196] (SMAP/MSL, channel clusters), +0.042 [0.016, 0.066] (SMD, machine clusters) (Table R2, §11.3). This replaces pooled p-values that treat non-independent windows as exchangeable.
+2. **A cluster-robust, dependence-aware quantification of that gap, with a small-K check.** ΔAUROC(diff − level) = +0.462 [0.409, 0.508] (OPS-SAT-AD, segment clusters), +0.122 [0.045, 0.196] (SMAP/MSL, channel clusters), +0.042 [0.016, 0.066] (SMD, machine clusters) (Table R2, §11.3). This replaces pooled p-values that treat non-independent windows as exchangeable. For OPS-SAT-AD (K = 5 channels) the same contrasts are re-estimated under two-level, wild-cluster (Webb, Rademacher) and exact sign-flip resampling; direction and size are unchanged in every scheme (Table R7), and the intervals are read as evidence on direction and magnitude because no exact test with K = 5 can reject at 0.05.
 3. **A false-alarm-matched measurement of the alarm-design payoff.** At 5% FAR, a `level|diff|diff²` fusion rule raises SMD coverage by +1.2 pp [0.4, 2.2] over `level` alone; a single derivative feature alone does not clear a significant gain at this operating point (Table R3, §11.4). This turns "diff separates onsets better" into a stated, bounded operational number.
 4. **An operator-baseline decomposition that any feature-precedence study can reuse — reported as calibration, not mechanism.** A normal-segment control separates the operator-level baseline of differencing from the anomaly-attributable increment: +40.1 pp (OPS-SAT-AD), +11.0 pp (SMAP/MSL), +3.9 pp (SMD) (Table 13, Fig. 7). A synthetic existence-proof check (Table R5, §11.6) shows an AR(1)+drift generator reproduces this gradient's *direction* but not its *magnitude*, so the decomposition is offered as a calibration tool rather than a validated mechanism.
-5. **A sharp instrument-physics reading in OPS-SAT-AD, reported with its one open anomaly.** `diff`/`diff²` are significant in 5/5 channels (all p_bonf < 2×10⁻⁴) and the ordering *reverses* in normal controls (level first in 55.8% of normal pairs versus 15.7% of anomalous). `level` shows no positive pooled discrimination (AUROC 0.438) and is **significantly reversed** in one channel (CADC0873); a sensitivity check against the pooled-standard-deviation definition of `level` narrows but does not eliminate this reversal (Table R4, §11.5) — the cause remains open.
+5. **A sharp instrument-physics reading in OPS-SAT-AD, reported with its open anomalies.** `diff`/`diff²` are significant in 5/5 channels (all p_bonf < 2×10⁻⁴) and the ordering *reverses* in normal controls (level first in 55.8% of normal pairs versus 15.7% of anomalous). Pooled `level` shows no positive discrimination (AUROC 0.438), but the pooled reversal is **not robust to channel-level resampling** (interval includes 0.5; Table R7b) and is driven by one channel (CADC0873; Table R7c). A **within-channel** reversal in CADC0873 (AUROC 0.289, segment-cluster p ≤ 0.002) remains, is not re-tested at the channel level, and is only partially explained by a sensitivity check against the pooled-standard-deviation definition of `level` (Table R4, §11.5) — the cause remains open.
 6. **An uncertainty-aware, multi-layer verification chain, extended by an independent replica audit.** Monte Carlo propagation of onset uncertainty (200 draws), train/test/bootstrap triple verification, a 16-model classifier cross-check, leave-one-out heterogeneity decomposition, and a from-scratch replica of the entire canonical-onset/placebo-pool pipeline that reproduces the saved analysis dataset to a maximum relative error of 1.8×10⁻¹⁵ (§11.2, §11.7).
-7. **Audit-grade transparency, including of the re-analysis itself.** A contamination of the pre-onset baseline in an early SMAP/MSL scheme was caught, discarded and fixed (§10, `docs/dev-log/`). The robustness re-analysis in §11 applies the same standard to its own outputs: a duplicate-placebo-pool check for the 16-model benchmark independently re-derives the tabular dataset from raw time series and cross-checks it under de-duplication, multi-seed grouped cross-validation, and a row-level leakage positive control (§11.7), with the headline agreement statistics unchanged.
+7. **Audit-grade transparency, including of the re-analysis itself.** A contamination of the pre-onset baseline in an early SMAP/MSL scheme was caught, discarded and fixed (§10, `docs/dev-log/`). The robustness re-analysis in §11 applies the same standard to its own outputs: a duplicate-placebo-pool check for the 16-model benchmark independently re-derives the tabular dataset from raw time series and cross-checks it under de-duplication, multi-seed grouped cross-validation, and a row-level leakage positive control (§11.7). Where the re-run arm differs from the original arm (level share below 1/3 in 16/16 instead of 15/16 models; top-rank split 4/12 instead of 5/11), both arms are reported side by side, and the remaining limitations are collected in one place (§11.8).
 
 **What this changes for practice.**
 
@@ -85,9 +87,9 @@ This repository is the code, data-provenance and figure-reproduction companion t
 
 **Scope fit.** The paper addresses a general methodological question in anomaly and onset detection: which signal statistic should carry the primary decision signal when an alarm is intended to identify the onset of an anomalous episode? The contribution is not tied to a particular spacecraft, sensor, or detector, but concerns feature choice under dependent observations and controlled false-alarm rates. The analysis combines dependence-aware cluster-bootstrap AUROC with false-alarm-matched coverage to quantify both statistical discrimination and operational relevance across heterogeneous telemetry and industrial monitoring datasets. The companion paper (`opssat-ad-risk-optimization`) addresses the subsequent decision problem of how alarm thresholds can be selected under explicit risk criteria, including CVaR and conformal calibration; the present repository supplies the feature-choice inputs (`channel_scope.json`, `onset_posteriors.parquet`) and their methodological justification. Together, these components separate the feature-selection question addressed here from the subsequent risk-calibration problem.
 
-**What is, and is not, claimed.** The paper does not claim a new detector that outperforms published benchmarks (§19), nor does it claim a validated causal mechanism (§11.6, §14). It claims (a) a cross-dataset directional result concerning which feature family carries more information about anomaly onset, with estimator-free support in SMAP/MSL and SMD; (b) dependence-aware and false-alarm-matched quantification of the corresponding operational increment; and (c) explicit characterization of where the evidence is robust and where it remains conditional, including OPS-SAT-AD's estimator dependence and the unresolved feature reversal in CADC0873.
+**What is, and is not, claimed.** The paper does not claim a new detector that outperforms published benchmarks (§19), nor does it claim a validated causal mechanism (§11.6, §14). It claims (a) a cross-dataset directional result concerning which feature family carries more information about anomaly onset, with estimator-free support in SMAP/MSL and SMD; (b) dependence-aware and false-alarm-matched quantification of the corresponding operational increment; and (c) explicit characterization of where the evidence is robust and where it remains conditional, including OPS-SAT-AD's estimator dependence, the small-K limit on formal testing (K = 5), the non-robust pooled `level` reversal, and the unresolved within-channel feature reversal in CADC0873.
 
-**Submission package.** The repository provides a reproducibility package containing the analysis code, data-provenance scripts, exact source scripts for the figures, development logs, and the robustness re-analysis in §11. `docs/METHODS_SUPPLEMENT.md` provides a manuscript-ready methodological record, while `docs/REPRODUCIBILITY_CHECKLIST.md` documents seeds, package versions, and expected runtimes (§17). The analyses underlying the cluster-robust and false-alarm-matched results in §11 can therefore be independently reproduced from the documented entry points and procedures described in §17, using the released artifacts rather than relying on undocumented intermediate processing.
+**Submission package.** The repository provides a reproducibility package containing the analysis code, data-provenance scripts, exact source scripts for the figures, development logs, and the robustness re-analysis in §11. `docs/METHODS_SUPPLEMENT.md` provides a manuscript-ready methodological record, while `docs/REPRODUCIBILITY_CHECKLIST.md` documents seeds, package versions, and expected runtimes (§17). The analyses underlying the cluster-robust, small-K and false-alarm-matched results in §11 can therefore be independently reproduced from the documented entry points and procedures described in §17, using the released artifacts rather than relying on undocumented intermediate processing.
 
 ---
 
@@ -97,15 +99,16 @@ The claims are graded by how far the evidence travels. Each tier states what is 
 
 | Tier | Claim | Where it is supported | Status and boundary |
 |---|---|---|---|
-| **1 — Direction, cluster-robust** | `diff`/`diff²` separate labeled anomaly onsets from same-channel placebo pivots more strongly than `level`, on a cluster-bootstrap AUROC that resamples at the segment (OPS-SAT-AD), channel (SMAP/MSL) or machine (SMD) level. | Table 3 / Table 12 (per-feature significance); **Table R2, §11.3** (cluster-robust ΔAUROC, the load-bearing statistic) | Same direction in 3/3 datasets; two of three onset sources are estimator-free |
+| **1 — Direction, cluster-robust** | `diff`/`diff²` separate labeled anomaly onsets from same-channel placebo pivots more strongly than `level`, on a cluster-bootstrap AUROC that resamples at the segment (OPS-SAT-AD), channel (SMAP/MSL) or machine (SMD) level. | Table 3 / Table 12 (per-feature significance); **Table R2, §11.3** (cluster-robust ΔAUROC, the load-bearing statistic); **Table R7, R7c, §11.3** (small-K check, OPS-SAT-AD) | Same direction in 3/3 datasets; two of three onset sources are estimator-free. **With K = 5 channels the OPS-SAT-AD contrasts are read as direction and magnitude, not as formal tests: no exact test can reject at α = 0.05 (minimum two-sided p = 0.0625). The direction and size survive two-level, wild-cluster and exact sign-flip resampling, and both contrasts keep their sign in every leave-one-channel-out fit (Table R7, R7c).** |
 | **2 — Operational, FAR-matched** | Adding derivative features to an alarm raises coverage at a matched false-alarm rate. | **Table R3, §11.4** | Confirmed for the fusion rule in SMD (+1.2 pp at 5% FAR); single-feature gains and the SMAP/MSL estimate are directionally consistent but not individually significant at current sample sizes |
 | **3 — Calibrated increment (descriptive)** | `diff`-first onset ordering has an operator-level baseline visible in normal controls; the anomaly-attributable increment over that baseline is +40.1 pp (OPS-SAT-AD), +11.0 pp (SMAP/MSL; interval spans zero at n=40), +3.9 pp (SMD). | Normal-segment controls in all three datasets (Table 13, Fig. 7) | Same sign in 3/3; magnitude is regime-dependent. **Downgraded from a mechanism claim to a descriptive calibration** after the synthetic existence-proof (Table R5, §11.6) reproduced the gradient's direction but not its magnitude |
-| **4 — Instrument-physics readings (OPS-SAT-AD)** | No positive pooled `level` discrimination (AUROC 0.438); one channel reverses significantly; `diff`/`diff²` effects stronger in `float_noise_suspect` (magnetometer) than `quantized` (photodiode) channels. | Layer 3 of the OPS-SAT-AD pipeline; **Table R1/R4, §11.2/§11.5** (consistency gate and reversal sensitivity check) | Conditional on the OPS-SAT-AD onset estimator; the `level` reversal's cause is investigated but not resolved; sensor family and channel type are aliased with detector-selection retention (see [Boundary conditions](#boundary-conditions-and-scope-of-validity)) |
+| **4 — Instrument-physics readings (OPS-SAT-AD)** | No positive pooled `level` discrimination (AUROC 0.438), read as *inconclusive* under channel-level resampling (Table R7b); a within-channel reversal in CADC0873 (segment-cluster); `diff`/`diff²` effects stronger in `float_noise_suspect` (magnetometer) than `quantized` (photodiode) channels. | Layer 3 of the OPS-SAT-AD pipeline; **Table R1/R4, §11.2/§11.5** (consistency gate and reversal sensitivity check); **Table R7b/R7c, §11.3** (pooled reversal not robust; driven by CADC0873) | Conditional on the OPS-SAT-AD onset estimator; the pooled `level` reversal is not robust to channel-level resampling; the CADC0873 within-channel reversal was not re-evaluated at the channel level and its cause is investigated but not resolved; sensor family and channel type are aliased with detector-selection retention (see [Boundary conditions](#boundary-conditions-and-scope-of-validity)) |
 | **Scope by design** | A universal causal mechanism linking onsets to derivative-statistic surges; superiority of a `diff`-based detector over published detectors; formal (do-calculus) identification. | — | Deliberately outside this paper: the contribution is signature identification, cluster-robust quantification, and FAR-matched feature-choice calibration |
 
 **Scope of detection results.** Layer 2 detection metrics (Table 1) serve channel scoping and lock the BOCPD hyperparameters. Separating *which feature carries onset information* (this paper) from *how to set the threshold under a risk criterion* (Paper 2) is a deliberate modular design, so that each contribution can be evaluated independently.
 
 ---
+
 ## Storyline of the investigation
 
 The investigation began with **OPS-SAT-AD** (ESA OPS-SAT mission, 9 telemetry channels, 2,123 expert-labeled univariate segments) and one question: is a level shift the operative anomaly signature, or do **variance surges in the first and second differences (`diff`, `diff²`)** carry more anomaly-relevant information?
@@ -120,7 +123,7 @@ The stress test proceeded along seven lines, each aimed at a different class of 
 4. **Is the attribution ranking specific to one learner's inductive bias?** → 16-model cross-validation over two data representations (§ Model Cross-Validation). *Result: 0/16 models rank `level` first. This controls the **classifier** side; all 16 models share labels derived from the same BOCPD onsets.*
 5. **Does the result depend on the onset estimator (BOCPD on Kalman innovations)?** → replication on SMAP/MSL and SMD, whose onsets are ground-truth labels (§ External Validation). *Result: the direction is confirmed with no estimator in the loop.*
 6. **Is the result specific to OPS-SAT-AD's instrument physics (quantization, sensor noise regime)?** → the same external replication. *Result: the direction travels; the strict-specificity and reversal readings are OPS-SAT-AD-specific, and the normal-control decomposition quantifies exactly how much of the ordering is baseline versus anomaly.*
-7. **Do the pooled significance tests, the 16-model benchmark and the baseline-decomposition mechanism survive independence, deduplication, and existence-proof checks?** → a post-hoc robustness re-analysis (§11): cluster-bootstrap re-estimation of every headline AUROC, a false-alarm-matched alarm-design comparison, a duplicate-placebo-pool leakage check for the 16-model benchmark, a sensitivity check on the `level` distance statistic, and a re-designed synthetic regime map. *Result: the direction and the classifier-side ranking survive unchanged; the mechanism claim behind the baseline decomposition is downgraded to a calibration tool; one `level` reversal (CADC0873) remains only partially explained.*
+7. **Do the pooled significance tests, the 16-model benchmark and the baseline-decomposition mechanism survive independence, deduplication, small-K and existence-proof checks?** → a post-hoc robustness re-analysis (§11): cluster-bootstrap re-estimation of every headline AUROC, channel-level (small-K) resampling of the OPS-SAT-AD contrasts, a false-alarm-matched alarm-design comparison, a duplicate-placebo-pool leakage check for the 16-model benchmark, a sensitivity check on the `level` distance statistic, and a re-designed synthetic regime map. *Result: the direction and the classifier-side ranking survive; the OPS-SAT-AD direction survives all channel-level resampling schemes although no formal test is possible with K = 5; the pooled `level` reversal does not survive channel-level resampling; the mechanism claim behind the baseline decomposition is downgraded to a calibration tool; the within-channel CADC0873 reversal remains only partially explained.*
 
 Lines 1–3 and 6 converge within OPS-SAT-AD. Lines 5–6 carry the directional claim to independent datasets. Line 7 is a self-audit of the entire pipeline conducted after the original analysis, following the same disclosure standard as the SMAP/MSL contamination episode below.
 
@@ -130,7 +133,7 @@ This repository packages:
 - The **labeling-protocol audit** and **train/test/bootstrap triple re-verification** (Layer 3b).
 - The **16-model cross-validation** benchmark and its agreement statistics.
 - An **external-validation pipeline** applying the placebo-pool and temporal-precedence logic, adapted to each dataset's label structure, to SMAP/MSL and SMD.
-- A **robustness re-analysis** (§11) that re-derives the headline statistics under cluster-bootstrap resampling, adds a false-alarm-matched alarm-design comparison, audits the 16-model benchmark for placebo-pool duplication, and tests the sensitivity of the `level` reversal to its distance statistic and of the baseline decomposition to a synthetic regime map.
+- A **robustness re-analysis** (§11) that re-derives the headline statistics under cluster-bootstrap resampling, re-estimates the OPS-SAT-AD contrasts under channel-level (small-K) schemes, adds a false-alarm-matched alarm-design comparison, audits the 16-model benchmark for placebo-pool duplication, and tests the sensitivity of the `level` reversal to its distance statistic and of the baseline decomposition to a synthetic regime map.
 - **Every figure regenerated from its exact source script** (`results/figures/*.py`), so every number a reader sees traces to code.
 - **Raw development logs** (`docs/dev-log/`): the unabridged analytical trail, including discarded ablations and methodological corrections (train/test leakage checks, SHAP return-shape bugs, cuDNN backward-mode fixes, the external-validation debugging trail, and the robustness re-analysis trail). They complement, and do not replace, the Methods text in this README and `docs/METHODS_SUPPLEMENT.md`.
 
@@ -157,17 +160,17 @@ Which results depend on a model-estimated onset, and which do not, determines ho
 | Claim | OPS-SAT-AD evidence | Outside OPS-SAT-AD (SMAP/MSL, SMD) |
 |---|---|---|
 | Channel scope: 9 → 5 channels, identical across 3 independent derivations | Fig. 1, Table 1 | N/A (OPS-SAT-AD-specific scoping) |
-| `diff`/`diff²` separate onsets from placebo more strongly than `level` (**direction, cluster-robust**) | Fig. 3a, Table 3; **ΔAUROC +0.462 [0.409,0.508] (Table R2)** | **Holds in 3/3 datasets**; ΔAUROC +0.122 [0.045,0.196] (SMAP/MSL), +0.042 [0.016,0.066] (SMD) (Table 12, Fig. 6, **Table R2**) |
-| `level` excess over placebo | Pooled AUROC **0.438 [0.401,0.477]**, no positive discrimination; **CADC0873 reversed and significant** (AUROC 0.289, two-sided cluster p=0.002) (Table 3, **Table R1/R4**) | Small but detectable: SMAP/MSL p_fdr=0.031; SMD p_fdr=8×10⁻³⁸ (nominal, pooled-p independence caveat; see cluster-robust AUROC in Table R2 for the calibrated size) |
+| `diff`/`diff²` separate onsets from placebo more strongly than `level` (**direction, cluster-robust**) | Fig. 3a, Table 3; **ΔAUROC +0.462 [0.409,0.508] (Table R2)**; **direction and size unchanged under channel-level resampling, e.g. [0.282, 0.593] two-level and [0.350, 0.574] exact enumeration; sign stable in every leave-one-channel-out fit (Table R7, R7c); with K = 5 no exact test can reject at 0.05, so read as direction and magnitude** | **Holds in 3/3 datasets**; ΔAUROC +0.122 [0.045,0.196] (SMAP/MSL), +0.042 [0.016,0.066] (SMD) (Table 12, Fig. 6, **Table R2**) |
+| `level` excess over placebo | Pooled AUROC **0.438 [0.401,0.477]** (segment-level), no positive discrimination; **the pooled reversal is not robust to channel-level resampling (two-level [0.350, 0.543], wild-Webb [0.364, 0.510], exact [0.370, 0.506]; Table R7b) and is driven by CADC0873 (Table R7c); read as inconclusive, not as no discrimination**; a within-channel CADC0873 reversal (AUROC 0.289, segment-cluster p ≤ 0.002) was not re-tested at the channel level (Table 3, **Table R1/R4**) | Small but detectable: SMAP/MSL p_fdr=0.031; SMD p_fdr=8×10⁻³⁸ (nominal, pooled-p independence caveat; see cluster-robust AUROC in Table R2 for the calibrated size) |
 | `diff` precedes `level` in onset timing; **anomalous-vs-normal contrast** | 84.3% (anomalous) vs 44.2% (normal): **ordering reverses** (Fig. 5b, Table 10) | **Same sign in every dataset**: +11.0 pp (SMAP/MSL, interval spans zero at n=40), +3.9 pp (SMD); baselines of 56.5% and 72.7% in normal controls (Table 13, Fig. 7). **Synthetic existence-proof reproduces the direction of this baseline gradient but not its magnitude (Table R5)** |
 | Adding derivative features to an alarm at a matched false-alarm rate | Raw-telemetry-based FAR-matching not run for OPS-SAT-AD (§11.4) | **+1.2 pp [0.4, 2.2] coverage gain at 5% FAR (SMD fusion rule, Table R3)** |
 | `float_noise_suspect` (magnetometer) shows stronger `diff`/`diff²` effects than `quantized` (photodiode) | Fig. 4a (aliased with sensor family **and with detector-selection retention, 28–100%, Table R1**) | Awaiting instrument diversity: 1/82 channels of this type in SMAP/MSL; no significant effect in SMD's 17 channels |
 | Placebo-pool result replicates on full / train-only / test-only splits | Fig. 3b (12/13 decidable comparisons agree); **independently reproduced from raw data (replica, max error 1.8×10⁻¹⁵), Table R1** | Direct external re-test listed in the roadmap |
-| 0/16 models rank `level` as top feature; 15/16 give `level` less than the 1/3 uniform share | Fig. 2, Tables 2, 6, 7; **reproduced after de-duplicating the placebo pool and correcting sequence-model early stopping: still 0/16, still 16/16 below 1/3, W=0.609 unchanged (Table R6)** | External replication listed in the roadmap |
+| 0/16 models rank `level` as top feature | Fig. 2, Tables 2, 6, 7; **original arm: 15/16 models give `level` less than the 1/3 uniform share, W=0.609. Re-run after de-duplicating the placebo pool and correcting sequence-model early stopping: still 0/16 top-ranked (qualitative result unchanged), 16/16 below 1/3, top-rank split 4/12 instead of 5/11 (Table R6)** | External replication listed in the roadmap |
 | No documented quantitative segment-cutting rule in the OPS-SAT-AD labeling protocol | — | N/A |
 | `level`'s high within-segment significance is reconciled with its lower precedence rank via transient-vs-persistent profile classification | §3.3 | Not applicable (OPS-SAT-AD within-segment analysis) |
 
-**Reading this table.** Row 2 is the load-bearing result and is now supported by a dependence-aware statistic. Row 5 gives the operational size of that result at a stated false-alarm rate. Row 4 is reported as a decomposition (operator baseline plus anomaly-attributable increment) with an explicit calibration-not-mechanism caveat. Row 3 discloses the one open anomaly (CADC0873) rather than reporting a uniform null. Rows 6 and 7 record where the OPS-SAT-AD instrument-physics reading is sharper than the cross-dataset reading and where it has been independently re-derived from scratch.
+**Reading this table.** Row 2 is the load-bearing result and is supported by a dependence-aware statistic; for OPS-SAT-AD it is additionally checked at the channel level, where direction and size hold but formal rejection is impossible with K = 5. Row 5 gives the operational size of that result at a stated false-alarm rate. Row 4 is reported as a decomposition (operator baseline plus anomaly-attributable increment) with an explicit calibration-not-mechanism caveat. Row 3 discloses that the pooled `level` reversal is not robust to channel-level resampling and that the within-channel CADC0873 anomaly remains open, rather than reporting a uniform null. Rows 6 and 7 record where the OPS-SAT-AD instrument-physics reading is sharper than the cross-dataset reading and where it has been independently re-derived from scratch.
 
 ---
 
@@ -182,6 +185,8 @@ opssat-ad-onset-signatures/
 ├── requirements.txt
 ├── environment.yml
 ├── Makefile                               # `make all` reproduces every figure/table below
+├── care_protocol_v8.py                    # §11.3 small-K resampling (P2) and coverage study (P1); writes results_care_v8/
+├── proposition1_verification.py           # §11.3 pair-decomposition identity check and bias-direction simulation (Table R9)
 │
 ├── data/
 │   ├── download_opssat_ad.sh              # fetches OPS-SAT-AD from Zenodo (no redistribution)
@@ -304,7 +309,14 @@ opssat-ad-onset-signatures/
 │   │   ├── fig06_cross_dataset_placebo.py
 │   │   ├── fig07_precedence_baseline.png
 │   │   └── fig07_precedence_baseline.py
-│   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above
+│   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above (incl. R7–R9)
+│
+├── results_care_v8/                       # written by care_protocol_v8.py (§11.3, Tables R7–R8)
+│   ├── P1_coverage_raw.csv                # replication-level coverage records (Table R8)
+│   ├── P1_coverage_summary.csv            # coverage by estimand × procedure (Table R8)
+│   ├── P2_smallK_convergence.csv          # contrasts under every resampling scheme (Table R7)
+│   ├── P2_level_reversal_diagnosis.csv    # pooled `level` under every scheme (Table R7b)
+│   └── P2_leave_one_channel_out.csv       # leave-one-channel-out fits (Table R7c)
 │
 └── docs/
     ├── dev-log/                           # raw, unabridged research log (see note below)
@@ -318,7 +330,7 @@ opssat-ad-onset-signatures/
     └── REPRODUCIBILITY_CHECKLIST.md
 ```
 
-> **Note on `docs/dev-log/`.** These files are the original conversational research logs kept during development, included **verbatim** for analytical transparency (file names retain the original "causal" wording). `step_external_validation.md` documents a self-audit made mid-analysis: an early version of the SMAP/MSL temporal-precedence test used a sliding-window onset-refinement scheme that contaminated the pre-onset baseline for windows longer than the baseline length. The internal checks caught this, the affected results were discarded, and the analysis was re-run with ground-truth onsets and a baseline-safe adaptive search window (§ External Validation). The episode is disclosed here as part of the reproducibility standard applied throughout this repository, and the same standard is applied to the robustness re-analysis in §11 (see the `results/` subfolders referenced there for the corresponding artifacts, and `docs/dev-log/` for their conversational audit trail alongside the files listed above).
+> **Note on `docs/dev-log/`.** These files are the original conversational research logs kept during development, included **verbatim** for analytical transparency (file names retain the original "causal" wording). `step_external_validation.md` documents a self-audit made mid-analysis: an early version of the SMAP/MSL temporal-precedence test used a sliding-window onset-refinement scheme that contaminated the pre-onset baseline for windows longer than the baseline length. The internal checks caught this, the affected results were discarded, and the analysis was re-run with ground-truth onsets and a baseline-safe adaptive search window (§ External Validation). The episode is disclosed here as part of the reproducibility standard applied throughout this repository, and the same standard is applied to the robustness re-analysis in §11 (see the `results/` subfolders and `results_care_v8/` referenced there for the corresponding artifacts, and `docs/dev-log/` for their conversational audit trail alongside the files listed above).
 
 ---
 
@@ -355,6 +367,7 @@ Industrial server telemetry from the OmniAnomaly benchmark (Su et al., KDD 2019)
 - Not redistributed; `data/download_smd.sh` fetches the public release.
 
 ---
+
 ## Methodology (OPS-SAT-AD primary pipeline)
 
 ### Layer 1 — Signal Estimation
@@ -418,7 +431,7 @@ Train-only reselection independently reproduces the same locked combination.
 
 **Goal**: determine what changes at an OPS-SAT-AD anomaly onset, and test whether the answer is an artifact of labeling, channel choice, or data-split leakage. All Layer 3 analyses operate on the 5 scoped channels and on **BOCPD-estimated onsets** (see [Onset provenance](#onset-provenance-of-each-result)).
 
-**3.1 Onset-uncertainty propagation (Monte Carlo).** 200 onset candidates per segment (seed=42); pre/post comparisons for `level` (Cohen's *d*) and for `diff`, `diff²` (log-variance-ratio proxy on squared values). 178/386 anomalous segments (46.1%) yield a scoreable window; 176/178 (98.9%) fall in the high-reliability tier and 177/178 (99.4%) in high-or-medium. The scoreable subset is a quality-gated selection and results are conditional on it.
+**3.1 Onset-uncertainty propagation (Monte Carlo).** 200 onset candidates per segment (seed=42); pre/post comparisons for `level` (Cohen's *d*) and for `diff`, `diff²` (log-variance-ratio proxy on squared values). 178/386 anomalous segments (46.1%) yield a scoreable window; 176/178 (98.9%) fall in the high-reliability tier and 177/178 (99.4%) in high-or-medium. The scoreable subset is a quality-gated selection and results are conditional on it. (The complete-case analysis dataset used from §3.7 onward contains 168 anomalous events; see the note under Table R1.)
 
 Within-segment, `level` is significant in 54–92% of segments per channel, while `diff`/`diff²` are significant in 2–76%. Read alone this favors `level`, which is the opposite of the precedence-test conclusion below; §3.3 shows why the two are consistent.
 
@@ -447,13 +460,13 @@ This reverses the initial working hypothesis `level → diff → diff²`.
 
 *How to read the statistics.*
 - Each feature is tested with a rank test on its **own natural statistic** (|*d*| for `level`; log-variance ratio for `diff`/`diff²`). Each test answers, feature by feature, "is this feature's onset effect distinguishable from placebo?" The p-values are distinguishability measures; the common-scale, cluster-robust comparison is in §11.3 (Table R2).
-- `level` p_bonf is reported as 1.000 in all five channels. This is the Bonferroni cap (raw p × 15 ≥ 1, i.e. raw p ≳ 0.067), not an estimate of equality. The correct reading is **no detectable excess over placebo**; no equivalence test was run. §11.2/§11.5 report that this null is not uniform: one channel (CADC0873) reverses significantly under a two-sided test.
+- `level` p_bonf is reported as 1.000 in all five channels. This is the Bonferroni cap (raw p × 15 ≥ 1, i.e. raw p ≳ 0.067), not an estimate of equality. The correct reading is **no detectable excess over placebo**; no equivalence test was run. §11.2/§11.5 report that this null is not uniform: one channel (CADC0873) shows a within-channel reversal under a two-sided segment-cluster test, while the pooled reversal is not robust to channel-level resampling (Table R7b, §11.3).
 
 *Result.* Within OPS-SAT-AD: `level` shows no detectable excess over placebo in **all 5 channels**; `diff`/`diff²` are significant in **all 5 channels**, all with p_bonf < 2×10⁻⁴ (Table 3, Fig. 3a). `diff`/`diff²` strength is markedly higher in the three `float_noise_suspect` magnetometer channels (0.78–0.89 significant-segment fraction) than in the two `quantized` photodiode channels (0.12–0.42); channel type and sensor family are aliased in this dataset (and, per §11.2, with detector-selection retention).
 
 > **Independent verification (§11.2).** A from-scratch replica of the entire canonical-onset extraction, effect computation, and placebo-pool assembly pipeline was built directly from raw segment time series (not from the saved intermediate CSVs) and checked row-for-row against the saved analysis dataset used to produce Table 3: **4,996/4,996 rows match, with a maximum relative error of 1.8×10⁻¹⁵ across `level`/`diff`/`diff²`.** The replica's own Mann–Whitney re-test of Table 3 reproduces the same channel×feature significance pattern (Table R1). This rules out a class of end-to-end pipeline bugs (mismatched onset indices, feature-definition drift between the extraction and the test scripts, silent placebo-pool corruption) as an explanation for any result in this section.
 
-**Interpretive consequence (OPS-SAT-AD-scoped).** Within OPS-SAT-AD, the `level` signal that looked significant within-segment (§3.1) is consistent with anomaly-non-specific channel drift, while the `diff`/`diff²` variance surge is not reproduced in the placebo pool. This reading is conditional on the BOCPD onset estimator and on OPS-SAT-AD's instrument physics; § External Validation reports the cross-dataset version, and §11.5 reports a sensitivity check on the `level` statistic itself that narrows, but does not close, the CADC0873 reversal.
+**Interpretive consequence (OPS-SAT-AD-scoped).** Within OPS-SAT-AD, the `level` signal that looked significant within-segment (§3.1) is consistent with anomaly-non-specific channel drift, while the `diff`/`diff²` variance surge is not reproduced in the placebo pool. This reading is conditional on the BOCPD onset estimator and on OPS-SAT-AD's instrument physics; § External Validation reports the cross-dataset version, and §11.5 reports a sensitivity check on the `level` statistic itself that narrows, but does not close, the CADC0873 within-channel reversal.
 
 **Structural working model (Fig. 4a, "Path A"; descriptive, OPS-SAT-AD-scoped)**:
 
@@ -467,7 +480,8 @@ Diff/Diff² variance surge (transient, onset-localized; stronger in float_noise_
       │
       ▼  (weak / dataset-conditional — see § External Validation)
 Level shift (persistent in ~50% of segments; no detectable excess over placebo in
-             OPS-SAT-AD (one channel reversed), small but detectable in SMAP/MSL and SMD)
+             OPS-SAT-AD (pooled reversal not robust to channel-level resampling; one channel
+             reversed within-channel), small but detectable in SMAP/MSL and SMD)
 ```
 
 The arrows describe temporal and structural ordering used to organize the analysis. They are asserted from signal-processing structure and checked against data for consistency; they are descriptive working-model edges (§ Scope of the inferential claims).
@@ -521,7 +535,7 @@ Attribution shares from different methods (SHAP/permutation vs. Integrated Gradi
 
 A 17th model (MLP_shallow) was removed by the fit-quality screen after AUC=0.403 (below chance, failed optimization) and is disclosed here. Headline statistics are over **16 models**.
 
-**Result.**
+**Result (original arm).**
 - **Zero of 16 models rank `level` as the top feature** (Fig. 2b: `diff` first in 5 models, `diff²` first in 11). The binomial reference is (2/3)¹⁶, p=.0015. The result holds separately within the tabular group (0/10) and the sequence group (0/6).
 - **15 of 16 models give `level` less than the 1/3 uniform share**; the exception is LightMamba (0.428). Equivalently, the combined `diff`+`diff²` share exceeds its 2/3 uniform expectation in 15/16 models.
 - Kendall's *W* = 0.609 (χ²=19.50, df=2, p=5.8×10⁻⁵) measures concordance of the feature ranking across models.
@@ -530,11 +544,12 @@ A 17th model (MLP_shallow) was removed by the fit-quality screen after AUC=0.403
 
 Because the design has only three features, "`diff`+`diff²` > `level`" is expected at 2:1 under a uniform-share null; the informative quantities are the top-rank count and the size of the `level` share, which are the statistics reported above.
 
-> **Leakage and duplication audit (§11.7).** The 4,996-row tabular dataset above was independently re-derived from raw segment time series and checked against the saved analysis file (exact match; see §11.2). It was then re-run under three additional arms: with the placebo pool de-duplicated (3,991 rows; a raw-pool duplication of 20.7% had been present in the original assembly), with a multi-seed stratified-group cross-validation, and with a row-level (non-grouped) cross-validation as a positive control for leakage. Per-model AUC moves by at most 0.017 across arms (largest for SVM-RBF), and the row-level positive control does not show the systematic inflation a leakage bug would produce (|Δ| ≤ 0.009, non-systematic in sign). The sequence-model arm was separately re-run with within-training-fold early stopping in place of the original test-fold early stopping. **The headline agreement statistics are unchanged to three decimal places** (0/16 rank `level` top, 16/16 below the 1/3 share, Kendall's W = 0.609, χ²=19.50, p=5.8×10⁻⁵) — see Table R6.
+> **Leakage and duplication audit (§11.7).** The 4,996-row tabular dataset above was independently re-derived from raw segment time series and checked against the saved analysis file (exact match; see §11.2). It was then re-run under three additional arms: with the placebo pool de-duplicated (3,951 placebo-pool rows after de-duplication of a raw pool of 4,980, i.e. a raw-pool duplication of 20.7%; the complete-case analysis then has 3,991 rows, see the note under Table R1), with a multi-seed stratified-group cross-validation, and with a row-level (non-grouped) cross-validation as a positive control for leakage. Per-model AUC moves by at most 0.017 across arms (largest for SVM-RBF), and the row-level positive control does not show the systematic inflation a leakage bug would produce (|Δ| ≤ 0.009, non-systematic in sign). The sequence-model arm was separately re-run with within-training-fold early stopping in place of the original test-fold early stopping. **The qualitative result is unchanged: 0/16 models rank `level` top. The re-run arm differs from the original arm in two reported counts — `level` share below 1/3 in 16/16 models (original 15/16; the original exception, LightMamba, no longer exceeds 1/3) and a top-rank split of `diff` 4 / `diff²` 12 (original 5 / 11).** Both arms are reported in Table 6 and Table R6. Kendall's W = 0.609 (χ² = 19.50, p = 5.8×10⁻⁵) refers to the original arm; it was not recomputed from the re-run arm's attribution shares in this README.
 
 **Scope note.** This check was run on OPS-SAT-AD. A reduced replication on SMAP/MSL or SMD is listed in the [Roadmap](#research-roadmap-enabled-by-this-release).
 
 ---
+
 ## External Validation / Generalization Study (SMAP/MSL, SMD)
 
 ### Motivation and positioning
@@ -601,8 +616,8 @@ Fig. 7a plots each dataset's normal-control and anomalous fractions with 95% Wil
 
 | | OPS-SAT-AD | SMAP/MSL | SMD |
 |---|---|---|---|
-| `diff`/`diff²` more strongly placebo-separating than `level` (direction, cluster-robust) | ✓ | ✓ | ✓ |
-| `level` shows no detectable excess over placebo (pooled) | ✓ pooled AUROC 0.438, **one channel significantly reversed** | small component (p_fdr=0.031) | small component (significant) |
+| `diff`/`diff²` more strongly placebo-separating than `level` (direction, cluster-robust) | ✓ (also under channel-level resampling, K = 5; Table R7) | ✓ | ✓ |
+| `level` shows no detectable excess over placebo (pooled) | ✓ pooled AUROC 0.438; **pooled reversal not robust to channel-level resampling; one channel reversed within-channel (segment-cluster)** | small component (p_fdr=0.031) | small component (significant) |
 | Anomalous-vs-normal `diff`-first contrast has positive sign | ✓ (+40.1 pp) | ✓ (+11.0 pp, interval spans zero) | ✓ (+3.9 pp) |
 | Ordering reverses in normal-segment control | ✓ | not observed (baseline 56.5%) | not observed (baseline 72.7%) |
 | `float_noise_suspect` > `quantized` pattern | ✓ (aliased with sensor family and detector retention) | not testable (n<10) | no significant effect in 17 channels |
@@ -616,9 +631,9 @@ Full per-dataset artifacts, including pooled/stratified test outputs and the sen
 
 ### 11.1 Motivation and scope
 
-The analyses above establish *direction* (`diff`/`diff²` separate onsets from placebo more strongly than `level`) using per-feature rank tests and pooled p-values. Two classes of question remain before that direction can support an alarm-design recommendation: (i) do the significance statements survive a resampling unit that respects each dataset's dependence structure (segments repeat within channels; anomaly windows repeat within machines), and (ii) how large is the practical, false-alarm-matched benefit of acting on the direction? A third question, specific to OPS-SAT-AD, is whether the one place `level` looked genuinely unusual (a significant *reversal* in channel CADC0873) is an artifact of the particular distance statistic used for `level`.
+The analyses above establish *direction* (`diff`/`diff²` separate onsets from placebo more strongly than `level`) using per-feature rank tests and pooled p-values. Two classes of question remain before that direction can support an alarm-design recommendation: (i) do the significance statements survive a resampling unit that respects each dataset's dependence structure (segments repeat within channels; anomaly windows repeat within machines), and (ii) how large is the practical, false-alarm-matched benefit of acting on the direction? A related question, specific to OPS-SAT-AD, is whether segment-level intervals are informative when only K = 5 channels exist (§11.3, Table R7). A third question is whether the one place `level` looked genuinely unusual (a reversal, most visibly in channel CADC0873) is an artifact of the particular distance statistic used for `level` (§11.5).
 
-This section answers all three with a self-contained re-analysis built, where possible, directly from raw segment/channel time series rather than from the already-aggregated CSVs used above — so that its conclusions do not simply inherit any error already present in the earlier pipeline. Every number in this section traces to the scripts referenced in §17 and the artifacts they write into the existing `results/layer3/`, `results/model_cross_validation/` and `results/external_validation/` subfolders (see `results/README.md` for the per-file provenance index), following the same disclosure standard set by the SMAP/MSL contamination episode (§10).
+This section answers these with a self-contained re-analysis built, where possible, directly from raw segment/channel time series rather than from the already-aggregated CSVs used above — so that its conclusions do not simply inherit any error already present in the earlier pipeline. Every number in this section traces to the scripts referenced in §17 and the artifacts they write into the existing `results/layer3/`, `results/model_cross_validation/` and `results/external_validation/` subfolders and into `results_care_v8/` (see `results/README.md` for the per-file provenance index), following the same disclosure standard set by the SMAP/MSL contamination episode (§10). The small-K tables (R7–R9) are transcriptions of the outputs of `care_protocol_v8.py` and `proposition1_verification.py`; no new computation was introduced when moving them into this README.
 
 ### 11.2 Data-consistency gate for OPS-SAT-AD
 
@@ -637,6 +652,8 @@ Before any re-derived statistic is trusted, the entire canonical-onset / placebo
 | Pooled AUROC (onset-vs-placebo, complete-case n=3,991) | level 0.438, diff 0.900, diff² 0.917 |
 | Stratified-by-channel AUROC (Simpson-distortion check) | level 0.434, diff 0.908, diff² 0.937 — close to pooled, no material distortion |
 
+*Row-count note.* Two different row counts refer to the de-duplicated placebo design and should not be confused: **3,951** is the number of placebo-pool rows after de-duplicating the raw pool of 4,980 (a 20.7% duplication rate), whereas **3,991** is the number of complete-case *analysis* rows after merging with the anomalous events and dropping rows with non-finite `level`/`diff`/`diff²` values. Likewise, **178** is the number of scoreable anomalous segments (§3.1), whereas **168** is the number of anomalous events in the complete-case analysis dataset; the ten-segment difference is attributed to the complete-case requirement (non-finite effect values dropped), and the count should be checked against the saved analysis file when regenerating this table.
+
 **Reading this table.** The exact match rules out a class of silent pipeline bugs. The retention row shows that the three channels with the strongest `diff`/`diff²` signature (the magnetometers) also have the lowest retention (27.6–32.1%, versus 60–100% for the photodiodes), so the instrument-type pattern reported in §3.7 is aliased with detector selectivity as well as sensor physics — this is now stated explicitly rather than only in the boundary conditions.
 
 ### 11.3 Cluster-robust AUROC: the load-bearing statistic
@@ -652,7 +669,7 @@ Each dataset's onset-vs-placebo separation is re-estimated as an AUROC with a cl
 | SMD | machine (K=28; 327 events) | 0.534 [0.521, 0.546] | 0.576 [0.553, 0.599] | 0.576 [0.554, 0.597] | **+0.042 [0.016, 0.066]** | **+0.042 [0.017, 0.066]** |
 | SMD (reference) | channel (K=1,064; 327 events) | 0.534 [0.523, 0.546] | 0.576 [0.566, 0.585] | 0.576 [0.566, 0.585] | +0.042 [0.028, 0.054] | +0.042 [0.028, 0.055] |
 
-*SMD's 327 underlying anomaly events are counted once per machine; the 11,493 window-level pairs used in Table 12's pooled test are these events replicated across up to 38 dimensions, which is why the machine cluster (K=28) rather than the channel cluster (K=1,064) is the primary unit here.*
+*SMD's 327 underlying anomaly events are counted once per machine; the 11,493 window-level pairs used in Table 12's pooled test are these events replicated across up to 38 dimensions, which is why the machine cluster (K=28) rather than the channel cluster (K=1,064) is the primary unit here. The OPS-SAT-AD row resamples at the segment level (K = 1,163); it does not reflect between-channel heterogeneity (I² = 66–97%, Table 4). Table R7 re-estimates the two OPS-SAT-AD contrasts with resampling at the channel level.*
 
 **Does `level` add anything once `diff`/`diff²` are already in the model?** An out-of-fold, group-held-out logistic model comparing `[level, diff, diff²]` against `[diff, diff²]` alone gives:
 
@@ -662,7 +679,72 @@ Each dataset's onset-vs-placebo separation is re-estimated as an AUROC with a cl
 | SMAP/MSL (channel) | −0.0068 | [−0.0381, 0.0241] | 0.70 |
 | SMD (machine) | −0.0009 | [−0.0143, 0.0129] | 0.93 |
 
-`level` contributes no positive incremental discrimination once `diff`/`diff²` are available in any of the three datasets; in OPS-SAT-AD the effect is small but significantly *negative*. This is the cluster-robust counterpart of the §3.7/Table 12 result and is the statistic Tier 1 of the evidence ladder rests on.
+`level` contributes no positive incremental discrimination once `diff`/`diff²` are available in any of the three datasets; in OPS-SAT-AD the change is negligible (|Δ| < 0.001). This is the cluster-robust counterpart of the §3.7/Table 12 result and is the statistic Tier 1 of the evidence ladder rests on.
+
+#### Small-K check (OPS-SAT-AD, K = 5 channels)
+
+Segment-level resampling (K = 1,163) does not reflect between-channel heterogeneity (I² = 66–97%, Table 4). Table R7 re-estimates the two headline contrasts with resampling at the channel level. The direction and size of the contrasts are unchanged across all schemes, but with K = 5 no exact test can reject at α = 0.05: the sign-flip enumeration has 2⁵ = 32 patterns, so the smallest attainable two-sided p is 2/32 = 0.0625 (reported as 0.0606 with the +1 correction). The intervals below are therefore read as evidence on direction and magnitude, not as formal tests.
+
+**Table R7 — Δ AUROC under alternative resampling schemes (OPS-SAT-AD)**
+
+| Scheme | Unit (K) | Δ(diff − level) [95% CI] | Δ(diff² − level) [95% CI] |
+|---|---|---|---|
+| Point estimate | — | +0.462 | +0.479 |
+| Single-level bootstrap (Table R2) | segment (1,163) | [0.409, 0.508] | [0.427, 0.527] |
+| Two-level bootstrap | channel > segment (5) | [0.282, 0.593] | [0.327, 0.600] |
+| Wild cluster, Webb 6-point | channel (5) | [0.342, 0.582] | [0.379, 0.578] |
+| Wild cluster, Rademacher | channel (5) | [0.334, 0.590] | [0.380, 0.578] |
+| Exact sign-flip enumeration (2⁵ = 32) | channel (5) | [0.350, 0.574] | [0.384, 0.574] |
+
+*The two-level bootstrap is conservative (simulated coverage ≥ 99%, Table R8).*
+
+**Table R7b — Pooled `level` AUROC (0.438) under the same schemes**
+
+| Scheme | 95% CI | Excludes 0.5 |
+|---|---|---|
+| Single-level (segment) | [0.401, 0.477] | yes |
+| Two-level (channel > segment) | [0.350, 0.543] | no |
+| Wild cluster, Webb | [0.364, 0.510] | no |
+| Exact enumeration | [0.370, 0.506] | no |
+
+> The pooled `level` reversal is therefore not robust to channel-level resampling. This does not re-test the within-channel CADC0873 result (AUROC 0.289), which rests on segment clusters inside one channel. Read as inconclusive for pooled `level`, not as evidence of no discrimination.
+
+**Table R7c — Leave-one-channel-out (OPS-SAT-AD)**
+
+| Channel dropped | AUROC `level` | Δ(diff − level) | Δ(diff² − level) |
+|---|---|---|---|
+| none (full) | 0.438 | 0.462 | 0.479 |
+| CADC0872 | 0.426 | 0.448 | 0.476 |
+| CADC0873 | 0.486 | 0.390 | 0.417 |
+| CADC0874 | 0.437 | 0.475 | 0.489 |
+| CADC0888 | 0.433 | 0.495 | 0.494 |
+| CADC0894 | 0.415 | 0.490 | 0.513 |
+
+> Both contrasts keep their sign in every leave-one-out fit. Pooled `level` moves toward 0.5 only when CADC0873 is removed.
+
+#### Supporting simulations: coverage of the resampling procedures and the pooled-vs-equal-weight difference
+
+**Table R8 — Coverage of 95% intervals, synthetic two-level design (K = 5, 500 replications, MC SE ≈ 0.010)**
+
+| Procedure | Coverage, size-weighted target | Coverage, channel-mean target | Mean width |
+|---|---|---|---|
+| Single-level (inner) | 96.2% | 79.2% | 0.066 |
+| Two-level | 99.6% | 99.4% | 0.188 |
+| Wild cluster (outer) | 98.2% | 97.4% | 0.163 |
+
+*All three intervals are centered on the pooled AUROC, so coverage of the channel-mean target reflects both the weighting difference and interval width. The table supports only that channel-level procedures are conservative and that the single-level interval is near nominal for the pooled target.*
+
+**Table R9 — Pooled vs. cluster-equal-weight AUROC (simulation, 300 replications per row)**
+
+| Size–effect correlation ρ | Mean (pooled − equal-weight) | SD |
+|---|---|---|
+| −0.8 | −0.0488 | 0.031 |
+| −0.4 | −0.0245 | 0.032 |
+| 0.0 | +0.0003 | 0.030 |
+| +0.4 | +0.0224 | 0.031 |
+| +0.8 | +0.0469 | 0.029 |
+
+*The pair-decomposition identity holds to 0 (pooled) and 2.8×10⁻¹⁷ (weighted-mean vs. covariance form). It is a standard decomposition, shown to motivate reporting per-channel and equal-weight AUROCs next to pooled ones. It does not say which estimand is correct.*
 
 ### 11.4 False-alarm-rate-matched alarm comparison
 
@@ -682,17 +764,21 @@ A fixed |z|>3 crossing criterion (used for the temporal-precedence tests above) 
 
 ### 11.5 Sensitivity of the `level` reversal to its distance statistic
 
-`level`'s effect size in the main analysis is |Cohen's *d*|, which divides the pre/post mean shift by a **pooled** (pre-and-post) standard deviation. If an anomaly also inflates the post-onset variance, this denominator grows and can *shrink* |*d*| even when the mean genuinely shifted — a candidate mechanical explanation for `level`'s poor showing and for CADC0873's significant reversal. To test this, an alternative statistic, `level_prez`, standardizes the same mean shift by the **pre-onset-only** standard deviation instead (matching the definition already used for the |z|>3 crossing criterion elsewhere in this README).
+`level`'s effect size in the main analysis is |Cohen's *d*|, which divides the pre/post mean shift by a **pooled** (pre-and-post) standard deviation. If an anomaly also inflates the post-onset variance, this denominator grows and can *shrink* |*d*| even when the mean genuinely shifted — a candidate mechanical explanation for `level`'s poor showing and for the CADC0873 within-channel reversal. To test this, an alternative statistic, `level_prez`, standardizes the same mean shift by the **pre-onset-only** standard deviation instead (matching the definition already used for the |z|>3 crossing criterion elsewhere in this README).
 
 **Table R4 — `level` vs. `level_prez` (pre-SD-standardized), cluster-robust AUROC**
 
 | Dataset | Cluster | AUROC `level` | AUROC `level_prez` | Δ(level_prez − level), CI, p | AUROC `diff` | Δ(diff − level_prez), CI, p |
 |---|---|---|---|---|---|---|
-| OPS-SAT-AD | segment (K=1,163) | 0.438 [0.401, 0.477] | 0.453 [0.408, 0.496] | +0.015 [−0.013, 0.043], p=0.30 (n.s.) | 0.900 | +0.447 [0.400, 0.496], p=0.002 |
-| SMAP/MSL | channel (K=68) | 0.490 [0.423, 0.565] | 0.570 [0.491, 0.653] | **+0.080 [0.030, 0.130], p=0.002** | 0.630 | +0.060 [−0.032, 0.149], p=0.22 (n.s.) |
-| SMD | machine (K=28) | 0.551 [0.532, 0.567] | 0.586 [0.567, 0.605] | **+0.035 [0.027, 0.044], p=0.002** | 0.596 | +0.010 [−0.017, 0.037], p=0.50 (n.s.) |
+| OPS-SAT-AD | segment (K=1,163) | 0.438 [0.401, 0.477] | 0.453 [0.408, 0.496] | +0.015 [−0.013, 0.043], p=0.30 (n.s.) | 0.900 | +0.447 [0.400, 0.496], p ≤ 0.002 |
+| SMAP/MSL | channel (K=68) | 0.490 [0.423, 0.565] | 0.570 [0.491, 0.653] | **+0.080 [0.030, 0.130], p ≤ 0.002** | 0.630 | +0.060 [−0.032, 0.149], p=0.22 (n.s.) |
+| SMD | machine (K=28) | 0.551 [0.532, 0.567] | 0.586 [0.567, 0.605] | **+0.035 [0.027, 0.044], p ≤ 0.002** | 0.596 | +0.010 [−0.017, 0.037], p=0.50 (n.s.) |
 
-**Reading this table.** In SMAP/MSL and SMD, switching to the pre-SD-standardized statistic significantly *raises* `level`'s AUROC and narrows (to a non-significant gap) its shortfall versus `diff` — supporting the pooled-standard-deviation hypothesis as a real, if partial, contributor to `level`'s weaker showing in those datasets. **In OPS-SAT-AD, the same substitution does not materially change `level`'s AUROC (Δ = +0.015, n.s.) and does not close the gap to `diff` (still +0.447, p=0.002).** The CADC0873 reversal and OPS-SAT-AD's overall `level` shortfall are therefore **not fully explained** by the pooled-standard-deviation artifact; the cause is left open in the [Boundary conditions](#boundary-conditions-and-scope-of-validity) rather than asserted.
+*p-value note.* Bootstrap p-values from 1,000 resamples have a resolution floor of 0.002 and are therefore reported as p ≤ 0.002.
+
+*Sample note.* R4 is estimated on a different analysis sample from R2 (SMAP/MSL: K = 68 vs. 81 channels, `level` AUROC 0.490 vs. 0.554; SMD: `level` AUROC 0.551 vs. 0.534), so AUROC values are comparable only within a table; the contrasts inside R4 are paired on R4's own sample.
+
+**Reading this table.** In SMAP/MSL and SMD, switching to the pre-SD-standardized statistic significantly *raises* `level`'s AUROC and narrows (to a non-significant gap) its shortfall versus `diff` — supporting the pooled-standard-deviation hypothesis as a real, if partial, contributor to `level`'s weaker showing in those datasets. **In OPS-SAT-AD, the same substitution does not materially change `level`'s AUROC (Δ = +0.015, n.s.) and does not close the gap to `diff` (still +0.447, p ≤ 0.002).** OPS-SAT-AD's overall `level` shortfall and the CADC0873 within-channel reversal are therefore **not fully explained** by the pooled-standard-deviation artifact; the cause is left open in the [Boundary conditions](#boundary-conditions-and-scope-of-validity) rather than asserted. Separately, the pooled `level` reversal itself is not robust to channel-level resampling (Table R7b).
 
 ### 11.6 Synthetic regime map v2: existence-proof, not mechanism proof
 
@@ -720,7 +806,7 @@ A re-designed synthetic-data check tests whether an AR(1)-autocorrelated baselin
 
 Summarized qualitatively in §9's Model Cross-Validation section; the full comparison is given here.
 
-**Table R6 — Tabular 10-model AUC across re-analysis arms**
+**Table R6 — Tabular-model AUC across re-analysis arms (nine of the ten tabular models are tabulated; the LogReg (L1) row is not included in the re-run arms)**
 
 | Model | O (original, as-run) | D (placebo de-duplicated) | D + multi-seed group CV | R (row-level CV, leakage positive control) | README |
 |---|---|---|---|---|---|
@@ -736,9 +822,27 @@ Summarized qualitatively in §9's Model Cross-Validation section; the full compa
 
 Sequence-model arm (dedup + within-fold early stopping, replacing the original test-fold early stopping), n=2,505 windows: CNN1D 0.975, TCN 0.980, BiLSTM 0.951, BiGRU 0.970, TinyTransformer 0.984, LightMamba 0.965.
 
-**Combined 16-model agreement statistics, this arm:** `level` ranked top in 0/16 models (`diff` in 4, `diff²` in 12), `level` below the 1/3 uniform share in **16/16** models, Kendall's *W* = **0.609** (χ²=19.50, df=2, p=5.8×10⁻⁵), binomial p=0.0015 — **identical, to the precision reported, to the original Table 6.**
+**Combined 16-model agreement statistics, original arm vs. re-run arm:**
 
-**Reading this table.** The original-arm AUCs match the README to within 0.001 in every model. De-duplication moves individual model AUCs by at most 0.017 (SVM-RBF); the row-level positive control does not show the systematic, one-directional inflation a real leakage bug would produce. The headline attribution-agreement statistics are unchanged after correcting both the placebo-pool duplication and the sequence-model early-stopping design. This closes the leakage/duplication risk that motivated this check.
+| Statistic | Original arm (Table 6) | Re-run arm (this section) |
+|---|---|---|
+| Models ranking `level` top | 0/16 | 0/16 |
+| Models ranking `diff` / `diff²` top | 5 / 11 | 4 / 12 |
+| Models with `level` share < 1/3 | 15/16 (exception: LightMamba, 0.428) | **16/16** |
+| Binomial reference (2/3)¹⁶ | p = .0015 | p = .0015 (depends only on the 0/16 count) |
+| Kendall's *W* (χ² = 19.50, df = 2, p = 5.8×10⁻⁵) | 0.609 | not recomputed from the re-run arm's attribution shares here |
+
+The qualitative result is unchanged: 0/16 models rank `level` first in both arms. The two counts that differ between the arms are reported as they are; in particular, the change in the top-rank split (5/11 → 4/12) means that Kendall's W and its χ² should be regenerated from the re-run arm's shares before being quoted for that arm.
+
+**Reading this table.** The original-arm AUCs match the README to within 0.001 in every model. De-duplication moves individual model AUCs by at most 0.017 (SVM-RBF); the row-level positive control does not show the systematic, one-directional inflation a real leakage bug would produce. The attribution-ranking result (0/16 top-ranked `level`) is unchanged after correcting both the placebo-pool duplication and the sequence-model early-stopping design. This closes the leakage/duplication risk that motivated this check.
+
+### 11.8 Remaining limitations (short)
+
+1. With K = 5 channels no exact test can reject at 0.05 (min p = 0.0625); the OPS-SAT-AD contrasts are supported as direction and magnitude (Table R7).
+2. The pooled `level` reversal is not robust to channel-level resampling (R7b), and pooled `level` is driven by CADC0873 (R7c). The within-channel CADC0873 reversal was not re-evaluated.
+3. A two-level (machine > channel) resampling of SMD on a 20,000-row proportional subsample (≈ 6% of 330,693 rows) gave a Δ(diff − level) CI width of 0.090 at K = 28 and did not exclude zero, versus a width of 0.050 ([0.016, 0.066]) for the machine-clustered interval on the full data (Table R2). Whether this reflects subsampling or double resampling is unresolved, and no K-sensitivity claim is made.
+4. Whether pooled and equal-weight AUROC differ on the real data, and whether detector retention drives that difference, is not established; Table R9 is a simulation, and per-channel retention (Table R1) is descriptive.
+5. Detector-matched placebo pivots (onset-estimator circularity) remain open.
 
 ---
 
@@ -756,7 +860,7 @@ We treat this as a **null-model expectation**, and the normal-control baseline i
 
 These implications concern **feature choice**, and are now stated with the false-alarm-matched operational size measured in §11.4 rather than only the placebo-separation direction.
 
-- **Feature choice for thresholding.** Across all three datasets, `diff`/`diff²` variance features separate labeled onsets from placebo more strongly than `level`, on both per-feature rank tests (§ Layer 3.7, § External Validation) and cluster-robust AUROC (§11.3). Adding a derivative-variance channel to the alarm feature set, alongside level-based thresholds, is well supported as a design choice.
+- **Feature choice for thresholding.** Across all three datasets, `diff`/`diff²` variance features separate labeled onsets from placebo more strongly than `level`, on both per-feature rank tests (§ Layer 3.7, § External Validation) and cluster-robust AUROC (§11.3). For OPS-SAT-AD the direction also holds under channel-level resampling (Table R7), though with K = 5 it is read as direction and magnitude rather than as a formal test. Adding a derivative-variance channel to the alarm feature set, alongside level-based thresholds, is well supported as a design choice.
 - **Set expectations at the right scale.** At a matched 5% false-alarm rate, a `level|diff|diff²` fusion rule raised SMD coverage by +1.2 pp [0.4, 2.2] over `level` alone (§11.4) — a real, defensible, but **modest** gain, not a step change in detection performance. A single derivative feature alone did not clear significance at this operating point and sample size; fusion, not substitution, is the supported recommendation.
 - **Baseline-aware calibration, offered as a descriptive tool.** Because the operator-level baseline is large on autocorrelated channels (Table 13, Fig. 7), a precedence advantage measured without a normal-segment control overstates the anomaly effect. The decomposition offers a reusable procedure — report the normal-control fraction, then the increment — while §11.6 shows this decomposition should be read as a calibration device rather than as evidence for a specific causal mechanism.
 - **Channel-type-dependent sensitivity (OPS-SAT-AD heuristic, now explicitly preliminary).** Within OPS-SAT-AD, `diff`/`diff²`-based alarms may warrant higher sensitivity for `float_noise_suspect` (magnetometer) channels and supplementary `level`-based corroboration for `quantized` (photodiode) channels, where the derivative signature is markedly weaker (Table 3, § Layer 3.7). Because the three magnetometer channels also have the lowest BOCPD detector retention (27.6–32.1%, §11.2), this instrument-aware tuning hypothesis is stated as preliminary pending detector-matched validation.
@@ -769,17 +873,19 @@ These implications concern **feature choice**, and are now stated with the false
 
 We use the term **"signature"** for a claim of the form *"feature X changes at labeled anomaly onsets more than at placebo pivots on the same channel."* The title and headline claims deliberately avoid "causal".
 
-**What supports the OPS-SAT-AD reading.** A quasi-experimental same-channel placebo design; temporal-precedence testing with a normal-segment control; channel-stratified confirmation (CMH); train/test/bootstrap triple verification; convergent classifier-side evidence from 16 architecturally diverse models (independently re-verified for leakage and duplication, §11.7); and a cluster-robust re-estimation of the core AUROC gap (§11.3). The structural skeleton (Fig. 4a) is asserted from the sensor's signal-processing structure and checked for consistency with data; §11.6 further checks its quantitative implications against a synthetic generator and finds them only partially reproduced.
+**What supports the OPS-SAT-AD reading.** A quasi-experimental same-channel placebo design; temporal-precedence testing with a normal-segment control; channel-stratified confirmation (CMH); train/test/bootstrap triple verification; convergent classifier-side evidence from 16 architecturally diverse models (independently re-verified for leakage and duplication, §11.7); a cluster-robust re-estimation of the core AUROC gap (§11.3); and a small-K check showing that the gap's direction and size survive channel-level resampling (Table R7, R7c). The structural skeleton (Fig. 4a) is asserted from the sensor's signal-processing structure and checked for consistency with data; §11.6 further checks its quantitative implications against a synthetic generator and finds them only partially reproduced.
 
 **What is deliberately outside the claim.**
 - Formal statistical identification in the Pearl do-calculus sense, and discovery of the skeleton's edges by an algorithm (PC, FCI, LiNGAM).
+- Formal hypothesis rejection for the OPS-SAT-AD contrasts at the channel level: with K = 5 no exact test can reject at 0.05, so these contrasts are supported as direction and magnitude only (§11.3, §11.8).
 - Freedom of OPS-SAT-AD's placebo comparison from selection asymmetry: anomalous onsets are detector-selected and placebo pivots are position-matched resamples (see [Onset provenance](#onset-provenance-of-each-result)). The estimator-free replication carries the direction claim instead; detector-matched placebo pivots remain a natural extension of the current design (see [Roadmap](#research-roadmap-enabled-by-this-release)).
 - A universal mechanism linking anomaly onsets to derivative-statistic surges. Outside OPS-SAT-AD the claim is that `diff`/`diff²` carry more placebo-discriminative information than `level`, an associational statement that is directly useful for feature selection and is now attached to a stated, false-alarm-matched operational size (§11.4).
 - A validated causal account of the operator-baseline gradient. §11.6's synthetic check reproduces its direction but not its magnitude, so the baseline decomposition (Table 13) is offered as a calibration tool.
 
-**Effect of the external results.** In SMAP/MSL and SMD, `diff` precedes `level` in anomalous and normal regimes alike (Fig. 7a), so the OPS-SAT-AD normal-control reversal is specific to its regime. The small positive anomalous-minus-normal increments (Table 13, Fig. 7b) are compatible with an anomaly-specific component on top of the baseline. A claim tested against external data, cluster-robust resampling, a false-alarm-matched operating point, and a synthetic existence-proof — and scoped accordingly where any of those checks came back partial or negative — is more transferable than one asserted from a single benchmark and a single statistic.
+**Effect of the external results.** In SMAP/MSL and SMD, `diff` precedes `level` in anomalous and normal regimes alike (Fig. 7a), so the OPS-SAT-AD normal-control reversal is specific to its regime. The small positive anomalous-minus-normal increments (Table 13, Fig. 7b) are compatible with an anomaly-specific component on top of the baseline. A claim tested against external data, cluster-robust resampling, a small-K channel-level check, a false-alarm-matched operating point, and a synthetic existence-proof — and scoped accordingly where any of those checks came back partial or negative — is more transferable than one asserted from a single benchmark and a single statistic.
 
 ---
+
 ## Figures
 
 Figures are generated by the scripts in `results/figures/` from `results/*.csv` / `results/*.json`. Figures 1–5 are OPS-SAT-AD-scoped; Figures 6–7 report the three-dataset external-validation comparisons (Tables 12–13) directly, so the cross-dataset result does not rest on tables alone. All seven figures encode categories by greyscale, hatch pattern or marker shape with direct labels, and remain legible in black-and-white print.
@@ -791,11 +897,11 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 *(a) MCC and Youden's J per channel at the locked hyperparameters (`mixture=False, forgetting=True`). Filled bars: channels in the final scope; dashed outlines: excluded channels (S structural, U underpowered, C chance-level). Counts under each channel are anomalous / nominal segments; the five in-scope channels hold 386 anomalous segments. CADC0890 has the highest point-estimate MCC (0.83) but only 3 nominal segments, so the scoping rule excludes it. (b) The 9→5 channel-scoping funnel; stage sizes and removals are derived from the channel table, and the scope is identical in the full, train-only and test-only re-derivations. These metrics serve channel scoping.*
 **Reproduces from:** `results/layer2/channel_scope.json`, `results/layer2/bootstrap_ci.csv` — **Script:** `results/figures/fig01_channel_scope.py`
 
-### Figure 2 — 16-model cross-validation: feature attribution and agreement (OPS-SAT-AD)
+### Figure 2 — 16-model cross-validation: feature attribution and agreement (OPS-SAT-AD, original arm)
 
 ![Figure 2: Model cross-validation](results/figures/fig02_model_cross_validation.png)
 
-*(a) Normalized feature-importance shares (level / diff / diff²) for each of 16 models, sorted by out-of-fold AUC within representation. The dotted line marks the 1/3 uniform share per feature; † marks the one model above it (LightMamba). 15 of 16 models give `level` less than 1/3, and no model ranks `level` first. (b) Number of models ranking each feature first (level 0, diff 5, diff² 11) and agreement statistics recomputed from the shares (Kendall's W = 0.609, χ² = 19.50, p = 5.8×10⁻⁵); the models share data and labels, so W and the binomial p are descriptive. This check controls the classifier side, was run on OPS-SAT-AD, and is independently re-verified for placebo-pool duplication and leakage in §11.7 (Table R6), with an unchanged result.*
+*(a) Normalized feature-importance shares (level / diff / diff²) for each of 16 models, **original arm**, sorted by out-of-fold AUC within representation. The dotted line marks the 1/3 uniform share per feature; † marks the one model above it in the original arm (LightMamba). In the original arm 15 of 16 models give `level` less than 1/3, and no model ranks `level` first. (b) Number of models ranking each feature first in the original arm (level 0, diff 5, diff² 11) and agreement statistics recomputed from the shares (Kendall's W = 0.609, χ² = 19.50, p = 5.8×10⁻⁵); the models share data and labels, so W and the binomial p are descriptive. This check controls the classifier side and was run on OPS-SAT-AD. The re-run arm (de-duplicated placebo pool, within-fold early stopping; §11.7, Table R6) keeps 0/16 top-ranked `level` but gives 16/16 models below 1/3 and a top-rank split of 4/12; the panel shows the original arm only.*
 **Reproduces from:** `results/model_cross_validation/feature_attribution_16models.csv`, `results/model_cross_validation/agreement_statistics.json` — **Script:** `results/figures/fig02_model_cross_validation.py`
 
 ### Figure 3 — Quasi-experimental placebo-pool test and triple verification (OPS-SAT-AD)
@@ -809,7 +915,7 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 
 ![Figure 4: SCM and heterogeneity](results/figures/fig04_scm_and_heterogeneity.png)
 
-*(a) Descriptive structural working model for OPS-SAT-AD ("Path A"): onset is followed by a transient `diff`/`diff²` variance surge; the `level` node is shown as persistent with no detectable excess over placebo in OPS-SAT-AD's pooled placebo test, and as reversed in one channel (CADC0873; §11.5). SMAP/MSL and SMD show a small `level` component, Table 12. The moderator box (float-noise/magnetometer vs. quantized/photodiode) is aliased with sensor family and with detector-selection retention (§11.2). (b) DerSimonian–Laird heterogeneity (*I²*) across the 5 scoped channels, for both effect size |d| and significant-segment fraction; with k=5 these are descriptive.*
+*(a) Descriptive structural working model for OPS-SAT-AD ("Path A"): onset is followed by a transient `diff`/`diff²` variance surge; the `level` node is shown as persistent with no detectable excess over placebo in OPS-SAT-AD's pooled placebo test; the pooled reversal is not robust to channel-level resampling (Table R7b), and one channel (CADC0873) shows a within-channel reversal (§11.5). SMAP/MSL and SMD show a small `level` component, Table 12. The moderator box (float-noise/magnetometer vs. quantized/photodiode) is aliased with sensor family and with detector-selection retention (§11.2). (b) DerSimonian–Laird heterogeneity (*I²*) across the 5 scoped channels, for both effect size |d| and significant-segment fraction; with k=5 these are descriptive.*
 **Reproduces from:** `results/layer3/heterogeneity_summary.csv` — **Script:** `results/figures/fig04_scm_and_heterogeneity.py`
 
 ### Figure 5 — Dataset overview and pooled temporal-precedence test (OPS-SAT-AD)
@@ -837,7 +943,7 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 
 ## Results tables
 
-*Tables 1–11 are the OPS-SAT-AD primary-analysis tables; the external-validation tables (12–13) are in [External Validation](#external-validation--generalization-study-smapmsl-smd); the robustness re-analysis tables (R1–R6) are in [§11](#robustness-re-analysis-cluster-robust-far-matched-and-sensitivity-checks).*
+*Tables 1–11 are the OPS-SAT-AD primary-analysis tables; the external-validation tables (12–13) are in [External Validation](#external-validation--generalization-study-smapmsl-smd); the robustness re-analysis tables (R1–R6, and the small-K tables R7, R7b, R7c, R8, R9) are in [§11](#robustness-re-analysis-cluster-robust-far-matched-and-sensitivity-checks).*
 
 ### Table 1 — Channel scoping decision table (underlies Fig. 1)
 
@@ -853,7 +959,7 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 | CADC0892 | Photodiode #5 | 211 | 16.1 | 0.971 | 0.994 | −0.090 | −0.024 | Excluded (chance-level) |
 | CADC0894 | Photodiode #6 | 144 | 14.6 | 1.000 | 0.797 | 0.189 | 0.203 | **Included** |
 
-### Table 2 — Model cross-validation summary (underlies Fig. 2, OPS-SAT-AD)
+### Table 2 — Model cross-validation summary (underlies Fig. 2, OPS-SAT-AD, original arm)
 
 | Model | Family | Representation | AUC | level share | diff share | diff² share |
 |---|---|---|---|---|---|---|
@@ -874,7 +980,7 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 | kNN | Instance-based | tabular | 0.918 | 0.129 | 0.391 | 0.480 |
 | GaussianNB | Probabilistic | tabular | 0.900 | 0.051 | 0.446 | 0.503 |
 
-AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model-cross-validation-16-architecturally-diverse-models)). See Table R6 (§11.7) for the de-duplicated / leakage-audited re-run of this table's headline statistics.
+AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model-cross-validation-16-architecturally-diverse-models)). See Table R6 (§11.7) for the de-duplicated / leakage-audited re-run of this table's headline statistics, where the re-run arm differs from the original arm in the `level`-below-1/3 count (16/16 vs. 15/16) and the top-rank split (4/12 vs. 5/11).
 
 ### Table 3 — Quasi-experimental placebo-pool comparison (OPS-SAT-AD; underlies Fig. 3a, Fig. 6a)
 
@@ -886,7 +992,7 @@ AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model
 | CADC0888 | 1.000 (capped) | 6.92×10⁻⁶ | 3.24×10⁻¹³ |
 | CADC0894 | 1.000 (capped) | 3.89×10⁻⁶ | 1.95×10⁻⁴ |
 
-*One-sided Mann–Whitney U per feature on its own statistic; 15 tests, Bonferroni-corrected. Independently reproduced from raw data in §11.2 (Table R1). See Table 12 / Fig. 6 for the SMAP/MSL and SMD equivalents, and Table R2 for the cluster-robust AUROC version.*
+*One-sided Mann–Whitney U per feature on its own statistic; 15 tests, Bonferroni-corrected. Independently reproduced from raw data in §11.2 (Table R1). See Table 12 / Fig. 6 for the SMAP/MSL and SMD equivalents, and Table R2 (with Table R7 for the channel-level small-K check) for the cluster-robust AUROC version.*
 
 ### Table 4 — Heterogeneity summary (underlies Fig. 4b, OPS-SAT-AD)
 
@@ -921,10 +1027,10 @@ AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model
 
 ### Table 6 — Model-cross-validation agreement and stability statistics (OPS-SAT-AD)
 
-| Statistic | Value | Robustness-re-analysis value (Table R6) |
+| Statistic | Original arm | Re-run arm (Table R6) |
 |---|---|---|
-| Kendall's *W* | **0.609** | 0.609 (unchanged) |
-| χ² approximation (df=2) | χ²=19.50, p=5.8×10⁻⁵ | unchanged |
+| Kendall's *W* | **0.609** | not recomputed from the re-run arm's shares in this README |
+| χ² approximation (df=2) | χ²=19.50, p=5.8×10⁻⁵ | not recomputed (see above) |
 | Models ranking `level` top | 0/16 (tabular 0/10, sequence 0/6) | 0/16 |
 | Models ranking `diff` / `diff²` top | 5 / 11 | 4 / 12 |
 | Binomial reference, (2/3)¹⁶ | p=.0015 (models share data, so descriptive) | p=.0015 |
@@ -932,7 +1038,7 @@ AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model
 | Bootstrap stability, RandomForest | 100% favor diff+diff² > level | — |
 | Bootstrap stability, LogisticRegression | 100% favor diff+diff² > level | — |
 
-### Table 7 — Grouping-level aggregation (13 finer-grained groupings within 9 coarse families, OPS-SAT-AD)
+### Table 7 — Grouping-level aggregation (13 finer-grained groupings within 9 coarse families, OPS-SAT-AD, original arm)
 
 | Grouping | Coarse family | n models | mean level | mean diff | mean diff² | diff+diff² > level |
 |---|---|---|---|---|---|---|
@@ -996,9 +1102,10 @@ AUC is out-of-fold and used to order models (see [Model Cross-Validation](#model
 | CADC0892 | quantized | 1.51×10⁻⁴ | 3.79×10⁻⁵ |
 | CADC0894 | quantized | 1.33×10⁻⁴ | 1.42×10⁻⁵ |
 
-*Table 12 (placebo-pool comparison across datasets; underlies Fig. 6) and Table 13 (precedence ordering and baseline decomposition; underlies Fig. 7) are in [External Validation](#external-validation--generalization-study-smapmsl-smd). Tables R1–R6 (data-consistency gate, cluster-robust AUROC, FAR-matched coverage, `level` distance-statistic sensitivity, synthetic regime map, and 16-model dedup/leakage audit) are in [§11](#robustness-re-analysis-cluster-robust-far-matched-and-sensitivity-checks).*
+*Table 12 (placebo-pool comparison across datasets; underlies Fig. 6) and Table 13 (precedence ordering and baseline decomposition; underlies Fig. 7) are in [External Validation](#external-validation--generalization-study-smapmsl-smd). Tables R1–R6 (data-consistency gate, cluster-robust AUROC, FAR-matched coverage, `level` distance-statistic sensitivity, synthetic regime map, and 16-model dedup/leakage audit) and Tables R7, R7b, R7c, R8, R9 (small-K resampling, pooled `level` under channel-level schemes, leave-one-channel-out, coverage simulation, pooled vs. equal-weight simulation) are in [§11](#robustness-re-analysis-cluster-robust-far-matched-and-sensitivity-checks).*
 
 ---
+
 ## Reproducing every number in this README
 
 ```bash
@@ -1038,40 +1145,46 @@ python results/figures/fig07_precedence_baseline.py
 
 # 8. Robustness re-analysis (§11): data-consistency gate, cluster-robust AUROC,
 #    FAR-matched alarm comparison, level_prez sensitivity, synthetic regime map v2,
-#    and the 16-model dedup/leakage audit (Tables R1–R6). This step re-derives its
-#    inputs directly from the raw per-segment/channel time series produced by steps
-#    3 and 6 above (it does not simply re-read the CSVs from steps 3/5/6), and writes
-#    its outputs into the existing results/layer3/, results/model_cross_validation/
-#    and results/external_validation/ subfolders (see results/README.md for the
-#    per-file provenance index). Runs after steps 3–6.
+#    the 16-model dedup/leakage audit (Tables R1–R6), and the small-K checks
+#    (Tables R7, R7b, R7c, R8, R9). This step re-derives its inputs directly from the
+#    raw per-segment/channel time series produced by steps 3 and 6 above (it does not
+#    simply re-read the CSVs from steps 3/5/6), and writes its outputs into the existing
+#    results/layer3/, results/model_cross_validation/ and results/external_validation/
+#    subfolders (see results/README.md for the per-file provenance index) and, for the
+#    care_protocol_v8.py outputs, into results_care_v8/. Runs after steps 3–6.
 python -m layer3_signature_analysis.robustness_reanalysis
 python -m model_cross_validation.dedup_leakage_audit
 python -m external_validation.cluster_robust_and_far_matched
+
+#    Small-K resampling (Tables R7, R7b, R7c) and coverage simulation (Table R8):
+#    P1 takes ~7 min and P2 ~7 s in the logged run.
+python care_protocol_v8.py --parts P1,P2
+#    Pair-decomposition identity and bias-direction simulation (Table R9):
+python proposition1_verification.py
 
 # ...or simply:
 make all
 ```
 
-`REPRODUCIBILITY_CHECKLIST.md` documents random seeds, package versions, and expected runtime (CPU-only: ~40 min for OPS-SAT-AD Layers 1–3; the 16-model benchmark is the long pole at ~2–3 hours on CPU / ~25 min on a single GPU; the external-validation pipeline runs in ~15–30 min on CPU, dominated by SMD's 1,064-channel loop; Figures 6–7 regenerate in seconds once `results/external_validation/` exists; the robustness re-analysis in step 8 adds ~30–45 min on CPU, dominated by the 1,000-resample cluster bootstraps for SMD and the synthetic regime map's ≥1,500-valid-pair-per-cell requirement, and ~15–20 min extra on a single GPU for the sequence-model re-run in §11.7).
+`REPRODUCIBILITY_CHECKLIST.md` documents random seeds, package versions, and expected runtime (CPU-only: ~40 min for OPS-SAT-AD Layers 1–3; the 16-model benchmark is the long pole at ~2–3 hours on CPU / ~25 min on a single GPU; the external-validation pipeline runs in ~15–30 min on CPU, dominated by SMD's 1,064-channel loop; Figures 6–7 regenerate in seconds once `results/external_validation/` exists; the robustness re-analysis in step 8 adds ~30–45 min on CPU, dominated by the 1,000-resample cluster bootstraps for SMD and the synthetic regime map's ≥1,500-valid-pair-per-cell requirement, and ~15–20 min extra on a single GPU for the sequence-model re-run in §11.7; the small-K step adds ~7 min for `care_protocol_v8.py --parts P1,P2`).
 
 ---
 
 ## Threats to validity
 
-Across the pipeline, the threats most likely to undermine the directional claim were tested rather than assumed away, and each was closed by a specific, artifact-producing check. Dependence between OPS-SAT-AD's segments, SMAP/MSL's channels, and SMD's machines is handled with cluster-bootstrap AUROC rather than pooled p-values for the placebo-pool comparison (§11.3, Table R2). The possibility that differencing merely looks faster because of its own noise structure — rather than because of anything anomaly-specific — is measured directly with normal-segment controls in all three datasets and tested against a synthetic AR(1)+drift existence-proof (§11.6, Table R5). Whether the direction is operationally worth acting on is answered with a false-alarm-rate-matched coverage comparison rather than a bare significance claim (§11.4, Table R3). A candidate confound in `level`'s own effect-size definition — a pooled, variance-inflatable standard deviation — is isolated with a pre-onset-standardized alternative statistic (§11.5, Table R4). Possible leakage or duplication in the 16-model classifier benchmark is ruled out by an independent from-scratch replica built directly from raw segment time series, a de-duplicated placebo pool, multi-seed grouped cross-validation, and a row-level leakage positive control (§11.2, §11.7, Tables R1 and R6). Train/test leakage in both channel scoping and the placebo-pool test is ruled out by independent train-only and test-only reproduction (§ Layer 3b), and the labeling protocol's provenance — no documented quantitative segment-cutting rule — is disclosed and its consequence bounded by confirmation on two datasets with entirely different labeling protocols (SMAP/MSL, SMD). Two threats remain genuinely open rather than resolved, and are reported as such rather than minimized: OPS-SAT-AD's onset estimator (BOCPD on Kalman innovations) still governs which segments enter the OPS-SAT-AD-scoped analyses, so those specific readings — though not the cross-dataset direction, which is estimator-free in SMAP/MSL and SMD — remain conditional on it; and the CADC0873 `level` reversal is only partially explained by the pooled-standard-deviation sensitivity check (§11.5), leaving its root cause an explicit, disclosed unknown rather than a claimed finding.
+Across the pipeline, the threats most likely to undermine the directional claim were tested rather than assumed away, and each was closed by a specific, artifact-producing check. Dependence between OPS-SAT-AD's segments, SMAP/MSL's channels, and SMD's machines is handled with cluster-bootstrap AUROC rather than pooled p-values for the placebo-pool comparison (§11.3, Table R2). For OPS-SAT-AD, whose K = 5 channels leave segment-level intervals blind to between-channel heterogeneity, the contrasts were re-estimated with channel-level resampling (two-level, wild-cluster, exact enumeration) and leave-one-channel-out fits: direction and size are unchanged, but no exact test can reject at 0.05 with K = 5, so those contrasts are read as direction and magnitude, and the pooled `level` reversal does not survive channel-level resampling (§11.3, Tables R7–R7c; §11.8). The possibility that differencing merely looks faster because of its own noise structure — rather than because of anything anomaly-specific — is measured directly with normal-segment controls in all three datasets and tested against a synthetic AR(1)+drift existence-proof (§11.6, Table R5). Whether the direction is operationally worth acting on is answered with a false-alarm-rate-matched coverage comparison rather than a bare significance claim (§11.4, Table R3). A candidate confound in `level`'s own effect-size definition — a pooled, variance-inflatable standard deviation — is isolated with a pre-onset-standardized alternative statistic (§11.5, Table R4). Possible leakage or duplication in the 16-model classifier benchmark is ruled out by an independent from-scratch replica built directly from raw segment time series, a de-duplicated placebo pool, multi-seed grouped cross-validation, and a row-level leakage positive control (§11.2, §11.7, Tables R1 and R6), with the two counts that differ between the original and re-run arms reported openly. Train/test leakage in both channel scoping and the placebo-pool test is ruled out by independent train-only and test-only reproduction (§ Layer 3b), and the labeling protocol's provenance — no documented quantitative segment-cutting rule — is disclosed and its consequence bounded by confirmation on two datasets with entirely different labeling protocols (SMAP/MSL, SMD). Two threats remain genuinely open rather than resolved, and are reported as such rather than minimized: OPS-SAT-AD's onset estimator (BOCPD on Kalman innovations) still governs which segments enter the OPS-SAT-AD-scoped analyses, so those specific readings — though not the cross-dataset direction, which is estimator-free in SMAP/MSL and SMD — remain conditional on it; and the CADC0873 within-channel `level` reversal is only partially explained by the pooled-standard-deviation sensitivity check (§11.5) and was not re-evaluated at the channel level, leaving its root cause an explicit, disclosed unknown rather than a claimed finding. The remaining limitations are collected in §11.8.
 
 ---
 
 ## Boundary conditions and scope of validity
 
-The claims are scoped accordingly. The load-bearing result is the directional finding that diff/diff² separates onsets from placebo more strongly than level, supported across all three datasets and estimator-free in SMAP/MSL and SMD. In contrast, OPS-SAT-AD-specific findings—including the pooled null for level, the CADC0873 reversal, and the float-noise–magnetometer–over–quantized-photodiode pattern—are conditional on the BOCPD onset estimator, the 178/386 (46.1%) quality-gated scoreable segments, and the detector-selectivity confound identified in §11.2; accordingly, the instrument-type pattern is presented as a preliminary hypothesis rather than an established instrument-physics effect. The operator-baseline decomposition in Table 13 is likewise descriptive rather than mechanistic: although its cross-dataset gradient (+40.1 / +11.0 / +3.9 pp) has the same direction as the plain autocorrelation-driven synthetic baseline in §11.6, the magnitudes differ and the SMAP/MSL increment interval spans zero at n = 40 jointly valid windows. The operational implication is therefore reported at its measured size (+1.2 pp coverage at 5% FAR for the SMD fusion rule in §11.4), without extrapolating this gain to OPS-SAT-AD, where a raw-telemetry-scale FAR-matched comparison remains future work. The 16-model cross-validation and labeling-protocol audit are treated as OPS-SAT-AD-internal robustness checks, with external replication remaining necessary; level and diff/diff² are compared using their natural statistics for per-feature rank tests, while cluster-robust AUROC and FAR-matched coverage provide common-scale comparisons, and diff and diff² are treated as one derivative-variance family because their relative ordering does not replicate consistently. Finally, OPS-SAT-AD inference is restricted to five of nine channels under the pre-registered conservative power rule, excluding CADC0890 despite its highest point-estimate MCC. These conditions define the empirical scope of the conclusions and should be considered when interpreting the central cluster-robust, cross-dataset directional finding.
-
+The claims are scoped accordingly. The load-bearing result is the directional finding that diff/diff² separates onsets from placebo more strongly than level, supported across all three datasets and estimator-free in SMAP/MSL and SMD. In contrast, OPS-SAT-AD-specific findings—including the pooled null for level (whose reversal is not robust to channel-level resampling and is driven by CADC0873), the CADC0873 within-channel reversal, and the float-noise–magnetometer–over–quantized-photodiode pattern—are conditional on the BOCPD onset estimator, the 178/386 (46.1%) quality-gated scoreable segments, and the detector-selectivity confound identified in §11.2; accordingly, the instrument-type pattern is presented as a preliminary hypothesis rather than an established instrument-physics effect. Because OPS-SAT-AD has only K = 5 channels, its contrasts are supported as direction and magnitude rather than as formal tests (minimum attainable exact two-sided p = 0.0625). The operator-baseline decomposition in Table 13 is likewise descriptive rather than mechanistic: although its cross-dataset gradient (+40.1 / +11.0 / +3.9 pp) has the same direction as the plain autocorrelation-driven synthetic baseline in §11.6, the magnitudes differ and the SMAP/MSL increment interval spans zero at n = 40 jointly valid windows. The operational implication is therefore reported at its measured size (+1.2 pp coverage at 5% FAR for the SMD fusion rule in §11.4), without extrapolating this gain to OPS-SAT-AD, where a raw-telemetry-scale FAR-matched comparison remains future work. The 16-model cross-validation and labeling-protocol audit are treated as OPS-SAT-AD-internal robustness checks, with external replication remaining necessary, and the original and re-run arms of the former differ in two reported counts (§11.7); level and diff/diff² are compared using their natural statistics for per-feature rank tests, while cluster-robust AUROC and FAR-matched coverage provide common-scale comparisons, and diff and diff² are treated as one derivative-variance family because their relative ordering does not replicate consistently. Finally, OPS-SAT-AD inference is restricted to five of nine channels under the pre-registered conservative power rule, excluding CADC0890 despite its highest point-estimate MCC. These conditions define the empirical scope of the conclusions and should be considered when interpreting the central cluster-robust, cross-dataset directional finding.
 
 ---
 
 ## Research roadmap enabled by this release
 
-Building on the released artifacts, several concrete follow-up analyses are enabled: extending the false-alarm-matched coverage comparison (§11.4) to OPS-SAT-AD using a raw-telemetry-scale trace pipeline analogous to the external-validation pipeline; broadening the synthetic-generator analysis in §11.6 to heteroscedastic, regime-switching, discretized, and heavy-tailed processes to examine whether alternative data-generating assumptions can account for the observed baseline gradient; applying the already-exported 996 normal segments to BOCPD-based detector-matched placebo pivots to further align the OPS-SAT-AD placebo construction; replicating the 16-model cross-validation in a reduced 2–4-family design on SMAP/MSL or SMD, including an official mamba_ssm implementation for the state-space family; and, in coordination with the companion risk-optimization study, conducting a primary-source-verified comparison with published OPS-SAT-AD Layer 2 detection baselines. The latter comparison should be reported only for the same task and metric—for example, channel-level MCC against the corresponding values in the original study—rather than against the onset-vs-placebo diagnostics reported here, which address a different evaluation target. These extensions are intended to test robustness, improve cross-dataset comparability, and clarify the boundary conditions of the present findings rather than to imply that the current study already establishes these broader claims.
+Building on the released artifacts, several concrete follow-up analyses are enabled: extending the false-alarm-matched coverage comparison (§11.4) to OPS-SAT-AD using a raw-telemetry-scale trace pipeline analogous to the external-validation pipeline; broadening the synthetic-generator analysis in §11.6 to heteroscedastic, regime-switching, discretized, and heavy-tailed processes to examine whether alternative data-generating assumptions can account for the observed baseline gradient; applying the already-exported 996 normal segments to BOCPD-based detector-matched placebo pivots to further align the OPS-SAT-AD placebo construction; replicating the 16-model cross-validation in a reduced 2–4-family design on SMAP/MSL or SMD, including an official mamba_ssm implementation for the state-space family; re-running the SMD two-level (machine > channel) resampling on the full data rather than a 20,000-row subsample, and reporting per-channel and equal-weight AUROCs next to pooled ones on the real data, to resolve limitations 3 and 4 in §11.8; and, in coordination with the companion risk-optimization study, conducting a primary-source-verified comparison with published OPS-SAT-AD Layer 2 detection baselines. The latter comparison should be reported only for the same task and metric—for example, channel-level MCC against the corresponding values in the original study—rather than against the onset-vs-placebo diagnostics reported here, which address a different evaluation target. These extensions are intended to test robustness, improve cross-dataset comparability, and clarify the boundary conditions of the present findings rather than to imply that the current study already establishes these broader claims.
 
 ---
 
