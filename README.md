@@ -58,8 +58,8 @@ The paper's claims are graded by how far the evidence travels. Readers (and revi
 
 | Tier | Claim | Where it is supported | Status |
 |---|---|---|---|
-| **1 — Established (direction)** | `diff`/`diff²` variance features separate labeled anomaly onsets from same-channel placebo pivots more strongly than `level`. | OPS-SAT-AD channel-level placebo test (Table 3); SMAP/MSL and SMD dataset-pooled tests with **ground-truth onsets** (Table 12) | Same direction in 3/3 datasets |
-| **2 — Quantified (baseline decomposition)** | `diff`-first onset ordering has a substantial operator-level baseline (visible in normal controls); the anomaly-attributable increment over that baseline is +40.1 pp (OPS-SAT-AD), +11.0 pp (SMAP/MSL, n.s.), +3.9 pp (SMD). | Normal-segment controls in all three datasets (Table 13) | Same sign in 3/3; magnitude strongly dataset-dependent |
+| **1 — Established (direction)** | `diff`/`diff²` variance features separate labeled anomaly onsets from same-channel placebo pivots more strongly than `level`. | OPS-SAT-AD channel-level placebo test (Table 3); SMAP/MSL and SMD dataset-pooled tests with **ground-truth onsets** (Table 12, Fig. 6) | Same direction in 3/3 datasets |
+| **2 — Quantified (baseline decomposition)** | `diff`-first onset ordering has a substantial operator-level baseline (visible in normal controls); the anomaly-attributable increment over that baseline is +40.1 pp (OPS-SAT-AD), +11.0 pp (SMAP/MSL, n.s.), +3.9 pp (SMD). | Normal-segment controls in all three datasets (Table 13, Fig. 7) | Same sign in 3/3; magnitude strongly dataset-dependent |
 | **3 — Conditional on OPS-SAT-AD** | No detectable `level` excess over placebo (0/5 channels); ordering contrast large enough to reverse in normal controls; stronger `diff`/`diff²` effects in `float_noise_suspect` (magnetometer) than `quantized` (photodiode) channels. | Layer 3 of the OPS-SAT-AD pipeline; train/test triple verification; 16-model attribution | Not observed in SMAP/MSL or SMD; moderator confounded with sensor family (see [Limitations](#limitations)) |
 | **4 — Not claimed** | A universal causal mechanism linking onsets to derivative-statistic surges; superiority of a `diff`-based detector over published detectors; formal (do-calculus) identification. | — | Out of scope |
 
@@ -116,9 +116,9 @@ Which results depend on a model-estimated onset, and which do not, determines ho
 | Claim | OPS-SAT-AD evidence | Holds in SMAP/MSL, SMD? |
 |---|---|---|
 | Channel scope: 9 → 5 channels, identical across 3 independent derivations | Fig. 1, Table 1 | N/A (OPS-SAT-AD-specific scoping) |
-| `diff`/`diff²` separate onsets from placebo more strongly than `level` (**direction**) | Fig. 3a, Table 3 | **Yes — 3/3 datasets** (Table 12) |
-| No detectable `level` excess over placebo (0/5 channels; p_bonf capped at 1.000) | Fig. 3a, Table 3 | **No** — `level` is weakly but significantly above placebo in SMAP/MSL (p_fdr=0.031) and SMD (p_fdr=8×10⁻³⁸, nominal; see independence caveat) |
-| `diff` precedes `level` in onset timing; **anomalous-vs-normal contrast** | 84.3% (anomalous) vs 44.2% (normal): **reversal** (Fig. 5b, Table 10) | **Same sign, much smaller**: +11.0 pp (SMAP/MSL, n.s.), +3.9 pp (SMD); **no reversal** (Table 13) |
+| `diff`/`diff²` separate onsets from placebo more strongly than `level` (**direction**) | Fig. 3a, Table 3 | **Yes — 3/3 datasets** (Table 12, Fig. 6) |
+| No detectable `level` excess over placebo (0/5 channels; p_bonf capped at 1.000) | Fig. 3a, Table 3 | **No** — `level` is weakly but significantly above placebo in SMAP/MSL (p_fdr=0.031) and SMD (p_fdr=8×10⁻³⁸, nominal; see independence caveat) (Table 12, Fig. 6) |
+| `diff` precedes `level` in onset timing; **anomalous-vs-normal contrast** | 84.3% (anomalous) vs 44.2% (normal): **reversal** (Fig. 5b, Table 10) | **Same sign, much smaller**: +11.0 pp (SMAP/MSL, n.s.), +3.9 pp (SMD); **no reversal** (Table 13, Fig. 7) |
 | `float_noise_suspect` (magnetometer) shows stronger `diff`/`diff²` effects than `quantized` (photodiode) | Fig. 4a (confounded with sensor family) | Undecided in SMAP/MSL (1/82 channels of this type); not confirmed in SMD |
 | Placebo-pool result replicates on full / train-only / test-only splits | Fig. 3b (12/13 decidable comparisons agree) | Not re-tested externally |
 | 0/16 models rank `level` as top feature; 15/16 give `level` less than the 1/3 uniform share | Fig. 2, Tables 2, 6, 7 | Not re-tested externally |
@@ -205,8 +205,8 @@ opssat-ad-onset-signatures/
 │
 ├── external_validation/
 │   ├── stage0_preprocessing.py            # command-column exclusion, channel re-typing, triviality filter
-│   ├── stage1_placebo_pooled.py           # dataset-pooled and channel-type-stratified placebo tests (FDR)
-│   ├── stage2_temporal_precedence.py      # ground-truth-onset precedence + normal-segment control
+│   ├── stage1_placebo_pooled.py           # dataset-pooled and channel-type-stratified placebo tests (FDR) (Fig. 6)
+│   ├── stage2_temporal_precedence.py      # ground-truth-onset precedence + normal-segment control (Fig. 7)
 │   ├── window_cap_sensitivity.py          # 150–5,000-sample search-window sensitivity sweep
 │   └── run_external_validation.py         # entry point
 │
@@ -240,13 +240,28 @@ opssat-ad-onset-signatures/
 │   │   ├── performance_leaderboard.csv
 │   │   ├── bootstrap_stability.csv
 │   │   └── agreement_statistics.json
-│   ├── external_validation/                     # pooled/stratified test outputs + sensitivity-sweep log
-│   ├── figures/                           # ← every PNG below, plus the .py script that produced it
-│   │   ├── fig01_channel_scope.png / .py
-│   │   ├── fig02_model_cross_validation.png / .py
-│   │   ├── fig03_quasi_experimental.png / .py
-│   │   ├── fig04_scm_and_heterogeneity.png / .py
-│   │   └── fig05_dataset_and_precedence.png / .py
+│   ├── external_validation/
+│   │   ├── stage1_placebo_pooled_dataset.csv        # Table 12 pooled rows; → Fig. 6a
+│   │   ├── stage1_channel_level_significance.csv    # Table 12 SMD channel-level counts; → Fig. 6b
+│   │   ├── stage1_channel_type_stratified.csv       # exploratory FDR family (§ Stage 1)
+│   │   ├── stage2_temporal_precedence.csv           # Table 13 precedence rows; → Fig. 7a
+│   │   ├── stage2_baseline_decomposition.csv        # Table 13 increment rows; → Fig. 7b
+│   │   └── window_cap_sensitivity.csv               # 150–5,000-sample sweep log
+│   ├── figures/
+│   │   ├── fig01_channel_scope.png
+│   │   ├── fig01_channel_scope.py
+│   │   ├── fig02_model_cross_validation.png
+│   │   ├── fig02_model_cross_validation.py
+│   │   ├── fig03_quasi_experimental.png
+│   │   ├── fig03_quasi_experimental.py
+│   │   ├── fig04_scm_and_heterogeneity.png
+│   │   ├── fig04_scm_and_heterogeneity.py
+│   │   ├── fig05_dataset_and_precedence.png
+│   │   ├── fig05_dataset_and_precedence.py
+│   │   ├── fig06_cross_dataset_placebo.png
+│   │   ├── fig06_cross_dataset_placebo.py
+│   │   ├── fig07_precedence_baseline.png
+│   │   └── fig07_precedence_baseline.py
 │   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above
 │
 └── docs/
@@ -378,7 +393,7 @@ This is inconsistent with the initial working hypothesis `level → diff → dif
 **3.3 Reconciling §3.1 and §3.2.**
 - **(a) Temporal-profile classification**: `diff` is transient in 98% of segments, `diff²` in 94%, and `level` is a near-even mix (50%/45%).
 - **(b) Early-window sensitivity**: `level`'s significance rate drops 0.864→0.633 in the early window, a larger relative loss than `diff`/`diff²`.
-- **(c) Normal-segment control.** The test was repeated on normal segments with resampled pivots (mean position ratio ≈0.569). Within OPS-SAT-AD the ordering **reverses**: `level` precedes `diff` in 55.8% of normal pairs (vs. 15.7% anomalous) and precedes `diff²` in 74.3% (vs. 17.1%). Read as a baseline decomposition, the normal-control fraction estimates the operator-level baseline and the anomalous-minus-normal difference estimates the anomaly-attributable increment (+40.1 pp for `level` vs. `diff`). This reversal does not replicate outside OPS-SAT-AD (§ External Validation, Stage 2).
+- **(c) Normal-segment control.** The test was repeated on normal segments with resampled pivots (mean position ratio ≈0.569). Within OPS-SAT-AD the ordering **reverses**: `level` precedes `diff` in 55.8% of normal pairs (vs. 15.7% anomalous) and precedes `diff²` in 74.3% (vs. 17.1%). Read as a baseline decomposition, the normal-control fraction estimates the operator-level baseline and the anomalous-minus-normal difference estimates the anomaly-attributable increment (+40.1 pp for `level` vs. `diff`). This reversal does not replicate outside OPS-SAT-AD (§ External Validation, Stage 2, Fig. 7).
 
 **3.4 Formal group comparison and diff-vs-diff² tie resolution.** Two-proportion *z*/Fisher exact tests and a channel-stratified CMH test confirm the orderings after stratification (CMH p≤4.33×10⁻¹⁵). For diff vs. diff², the cross-correlation lag in anomalous segments differs from zero (p=0.00094) but anomalous-vs-normal lag distributions do not differ (p=0.906), so no reliable diff/diff² ordering is claimed in either regime.
 
@@ -490,7 +505,7 @@ Unlike OPS-SAT-AD's whole-segment labels, SMAP/MSL and SMD provide **ground-trut
 - **Triviality filtering.** Following Wu & Keogh's (2021) critique, anomaly windows whose values exceed 20 nominal standard deviations are excluded from the primary test (`is_trivial_anomaly`).
 - **Underpowered per-channel testing.** SMAP/MSL has a median of 1 anomaly window per channel (max 3), so per-channel Mann–Whitney tests are structurally underpowered (0/66 channels reached the n≥5 minimum in an initial attempt). Dataset-pooled and channel-type-stratified tests are therefore the primary external result, with per-channel counts reported for SMD.
 
-### Stage 1 — Placebo-pool comparison (external replication of §3.7)
+### Stage 1 — Placebo-pool comparison (external replication of §3.7; Fig. 6)
 
 **Table 12 — Placebo-pool comparison across datasets**
 
@@ -500,13 +515,13 @@ Unlike OPS-SAT-AD's whole-segment labels, SMAP/MSL and SMD provide **ground-trut
 | **SMAP/MSL** | dataset-pooled (n_anom=88 windows) | significant (p_fdr=0.031) | significant (p_fdr=4.7×10⁻⁹) | significant (p_fdr=1.3×10⁻⁶) |
 | **SMD** | dataset-pooled (n_anom=11,493 windows) | significant (p_fdr=8×10⁻³⁸) | significant (p_fdr=3.7×10⁻¹⁶⁷) | significant (p_fdr=1.4×10⁻¹⁶⁶) |
 
-**Direction is preserved in all three datasets**: `diff`/`diff²` clear placebo by much larger margins than `level`. The p-value gap is about 7 orders of magnitude in SMAP/MSL and about 129 in SMD. **Strict specificity (`level` = null) is not preserved**: `level` is weakly but reliably above placebo in both external datasets.
+**Direction is preserved in all three datasets**: `diff`/`diff²` clear placebo by much larger margins than `level`. The p-value gap is about 7 orders of magnitude in SMAP/MSL and about 129 in SMD. **Strict specificity (`level` = null) is not preserved**: `level` is weakly but reliably above placebo in both external datasets. Fig. 6a plots these three rows on a common −log₁₀(p) axis (broken for SMD); Fig. 6b gives the SMD channel-level breadth that is the more conservative summary described next.
 
-**Independence caveat for the pooled p-values.** The pooled tests treat anomaly windows as exchangeable units, but windows are nested within channels and machines and are not independent. The extreme SMD p-values (10⁻¹⁶⁷) are therefore nominal and should be read as descriptive of direction, not as calibrated evidence strength. The **channel-level counts** are the more conservative summary: in SMD, 97/1,038 channels (9.3%) are significant for `level`, versus 142/1,038 (13.7%) for `diff` and 145/1,038 (14.0%) for `diff²`, i.e. roughly 1.5 times as many channels for the derivative features. That gap is consistent in direction with the pooled result and much more modest in size. A cluster-robust re-analysis (bootstrap by channel/machine) is listed under [Planned extensions](#planned-extensions-not-in-this-release).
+**Independence caveat for the pooled p-values.** The pooled tests treat anomaly windows as exchangeable units, but windows are nested within channels and machines and are not independent. The extreme SMD p-values (10⁻¹⁶⁷) are therefore nominal and should be read as descriptive of direction, not as calibrated evidence strength. The **channel-level counts** are the more conservative summary (Fig. 6b): in SMD, 97/1,038 channels (9.3%) are significant for `level`, versus 142/1,038 (13.7%) for `diff` and 145/1,038 (14.0%) for `diff²`, i.e. roughly 1.5 times as many channels for the derivative features. That gap is consistent in direction with the pooled result and much more modest in size. A cluster-robust re-analysis (bootstrap by channel/machine) is listed under [Planned extensions](#planned-extensions-not-in-this-release).
 
 **Channel-type-stratified results** (exploratory family, separately FDR-corrected). In SMAP/MSL, the `continuous` channel type shows `level` n.s. (p_fdr=0.35) with `diff`/`diff²` significant, the OPS-SAT-AD pattern exactly, while the `quantized` type shows `level` weakly significant. The `float_noise_suspect` type could not be tested in SMAP/MSL (1/82 channels, 3 anomaly windows) and showed no significant effect for any feature in SMD (fewest anomaly windows there: 162 across 17 channels).
 
-### Stage 2 — Temporal precedence and normal-segment control (external replication of §3.2–3.3c)
+### Stage 2 — Temporal precedence and normal-segment control (external replication of §3.2–3.3c; Fig. 7)
 
 **Methodological note.** An initial attempt to increase power by sliding multiple onset candidates within each SMAP/MSL anomaly window (analogous to OPS-SAT-AD's Monte Carlo onset propagation) was found, on diagnosis, to contaminate the pre-onset baseline whenever the anomaly window (median 120 samples) exceeded the baseline length (20 samples): offset-shifted "onset candidates" ended up partially inside the anomaly itself. This was caught via a paired jointly-valid-candidate check and a window-length stratification test (both in `docs/dev-log/step_external_validation.md`). The results below use the corrected method: the **ground-truth onset only**, with an **adaptive (non-sliding) post-onset search window** whose upper bound was confirmed, via a sensitivity sweep from 150 to 5,000 samples, not to introduce censoring bias (n and effect direction stable across a 33× range of window caps).
 
@@ -521,13 +536,15 @@ Unlike OPS-SAT-AD's whole-segment labels, SMAP/MSL and SMD provide **ground-trut
 | **SMD** | anomalous | 3,612 | 76.6% | 2.9×10⁻²⁵ |
 | **SMD** | normal control | 7,304 | 72.7% | 1.67×10⁻⁴⁴ |
 
-**Baseline decomposition.** If differencing has an operator-level speed advantage on any local disturbance (see [Analytical baseline](#analytical-baseline-why-differencing-may-respond-faster)), the normal-control fraction estimates that baseline and the anomalous-minus-normal difference estimates the anomaly-attributable increment.
+Fig. 7a plots each dataset's normal-control and anomalous fractions with 95% Wilson intervals on the same axis.
+
+**Baseline decomposition.** If differencing has an operator-level speed advantage on any local disturbance (see [Analytical baseline](#analytical-baseline-why-differencing-may-respond-faster)), the normal-control fraction estimates that baseline and the anomalous-minus-normal difference estimates the anomaly-attributable increment. Fig. 7b plots this increment directly, with an approximate 95% interval.
 
 | Dataset | Normal-control baseline (`diff` first) | Anomalous (`diff` first) | Increment (pp) | Reading |
 |---|---|---|---|---|
-| OPS-SAT-AD | 44.2% | 84.3% | **+40.1** | Large; baseline below 50%, so ordering reverses |
-| SMAP/MSL | 56.5% | 67.5% | +11.0 | Same sign; anomalous-regime result n.s. (n=40), undecided |
-| SMD | 72.7% | 76.6% | +3.9 | Same sign; small (nominal two-proportion *z*≈4.4 from the reported fractions, treating pairs as independent, so descriptive only) |
+| OPS-SAT-AD | 44.2% | 84.3% | **+40.1** [29.4, 50.8] | Large; baseline below 50%, so ordering reverses |
+| SMAP/MSL | 56.5% | 67.5% | +11.0 [−3.6, 25.6] | Same sign; anomalous-regime result n.s. (n=40), undecided |
+| SMD | 72.7% | 76.6% | +3.9 [2.2, 5.6] | Same sign; small (nominal two-proportion *z*≈4.4 from the reported fractions, treating pairs as independent, so descriptive only) |
 
 **Interpretation.**
 - **The reversal is OPS-SAT-AD-specific.** In SMAP/MSL and SMD, `diff` precedes `level` in both regimes, at broadly similar rates, so no reversal occurs. For SMD this is a **non-replication** at high statistical power; for SMAP/MSL the anomalous-regime result is **underpowered and undecided**, because only 40 of 88 non-trivial windows have `level`, `diff` and `diff²` all crossing threshold within the same window (confirmed not to be a search-window-cap artifact).
@@ -554,7 +571,7 @@ This section is an analytical argument and reports no new analysis.
 
 The first post-onset |z|>3 crossing time is a signal-to-baseline-noise criterion: a series crosses when a disturbance exceeds three pre-onset standard deviations of that series. For series with slowly varying or autocorrelated components (drift, thermal trends, operating-mode wandering), first differencing suppresses those components, so the pre-onset standard deviation of `diff` is small relative to that of `level` for a comparable local disturbance. A disturbance of fixed amplitude is then more likely to cross the 3σ threshold in `diff` first, **irrespective of whether it is an anomaly**. `diff²` inherits the same advantage for variance-type disturbances.
 
-We treat this as a **null-model expectation, not a result**. Whether it accounts for the external-dataset ordering is what the normal-control baseline in Table 13 measures: it is large in SMD (72.7%) and SMAP/MSL (56.5%), and below 50% in OPS-SAT-AD (44.2%), where the slowly varying components apparently do not dominate level noise to the same degree. This paper does not include a simulation that maps the regimes in which the operator baseline favors `diff` (see [Planned extensions](#planned-extensions-not-in-this-release)).
+We treat this as a **null-model expectation, not a result**. Whether it accounts for the external-dataset ordering is what the normal-control baseline in Table 13 / Fig. 7a measures: it is large in SMD (72.7%) and SMAP/MSL (56.5%), and below 50% in OPS-SAT-AD (44.2%), where the slowly varying components apparently do not dominate level noise to the same degree. This paper does not include a simulation that maps the regimes in which the operator baseline favors `diff` (see [Planned extensions](#planned-extensions-not-in-this-release)).
 
 ---
 
@@ -562,7 +579,7 @@ We treat this as a **null-model expectation, not a result**. Whether it accounts
 
 These implications concern **feature choice** and are hypothesis-generating: this paper does not benchmark a `diff`-based detector against `level`-based or published detectors.
 
-- **Feature choice for thresholding.** Across all three datasets, `diff`/`diff²` variance features separate labeled onsets from placebo more strongly than `level` by per-feature rank tests (§ Layer 3.7, § External Validation). Favoring derivative-based features, at minimum as a complement to level-based thresholds, is a reasonable design choice; how much detection performance improves is not measured here. Practitioners should expect the operator-level baseline (Table 13) to inflate apparent `diff` advantages on autocorrelated channels.
+- **Feature choice for thresholding.** Across all three datasets, `diff`/`diff²` variance features separate labeled onsets from placebo more strongly than `level` by per-feature rank tests (§ Layer 3.7, § External Validation). Favoring derivative-based features, at minimum as a complement to level-based thresholds, is a reasonable design choice; how much detection performance improves is not measured here. Practitioners should expect the operator-level baseline (Table 13, Fig. 7) to inflate apparent `diff` advantages on autocorrelated channels.
 - **Channel-type-dependent sensitivity (OPS-SAT-AD heuristic).** Within OPS-SAT-AD, `diff`/`diff²`-based alarms may warrant higher sensitivity for `float_noise_suspect` (magnetometer) channels and supplementary `level`-based corroboration for `quantized` (photodiode) channels, where the derivative signature is markedly weaker (Table 3, § Layer 3.7). This pattern is confounded with sensor family and was not confirmed externally, so it is a tuning heuristic pending validation on more instrument types.
 - **False-alarm trade-offs.** The Layer 2 scoping results (Table 1) show `CADC0892` and `CADC0894` combining high nominal recall with high false-alarm rates once BOCPD is applied naively, driven by extreme steady-state kurtosis rather than by a level/derivative feature-choice issue (§2.5). Feature choice alone does not resolve detector-tuning challenges and must be paired with channel-specific noise modeling.
 - **Relationship to risk-aware alarm design (Paper 2).** This paper addresses *what* signal to threshold; the companion paper ([`opssat-ad-risk-optimization`](https://github.com/USERNAME/opssat-ad-risk-optimization)) addresses *how* to set the threshold under an explicit risk criterion (CVaR-based, with conformal calibration), consuming this repository's `onset_posteriors.parquet` and `channel_scope.json` artifacts.
@@ -580,56 +597,68 @@ We use the term **"signature"** to describe a claim of the form *"feature X chan
 - We do **not** claim that OPS-SAT-AD's placebo comparison is free of selection asymmetry, since anomalous onsets are detector-selected and placebo pivots are position-matched resamples (see [Onset dependence](#onset-dependence-of-each-result)).
 - Outside OPS-SAT-AD we claim only that `diff`/`diff²` carry more placebo-discriminative information than `level`, a purely associational statement that is still useful for feature selection but is **not** evidence of a universal mechanism linking anomaly onsets to derivative-statistic surges.
 
-**Effect of the external results.** The normal-segment-control reversal, the strongest OPS-SAT-AD evidence against a "differencing is always faster" explanation, does not replicate in SMAP/MSL or SMD. In both, `diff` precedes `level` in anomalous and normal regimes alike, a pattern consistent with the alternative explanation the reversal was designed to rule out. The small positive anomalous-minus-normal increments (Table 13) are compatible with an anomaly-specific component on top of the baseline, but do not establish it. A claim that has been tested against external data and narrowed accordingly is more trustworthy than one asserted from a single benchmark.
+**Effect of the external results.** The normal-segment-control reversal, the strongest OPS-SAT-AD evidence against a "differencing is always faster" explanation, does not replicate in SMAP/MSL or SMD (Fig. 7). In both, `diff` precedes `level` in anomalous and normal regimes alike, a pattern consistent with the alternative explanation the reversal was designed to rule out. The small positive anomalous-minus-normal increments (Table 13, Fig. 7b) are compatible with an anomaly-specific component on top of the baseline, but do not establish it. A claim that has been tested against external data and narrowed accordingly is more trustworthy than one asserted from a single benchmark.
 
 ---
 
 ## Figures
 
-Figures are generated by the scripts in `results/figures/` from `results/*.csv` / `results/*.json`. Figures 2, 4 and 5 encode categories redundantly by greyscale and hatch pattern and are legible in black-and-white print. Figures 1 and 3 use blue/teal color encoding with direct labels.
-
-*Figures 1–5 show OPS-SAT-AD-scoped results; captions state where a claim is OPS-SAT-AD-specific and point to § External Validation. The three-dataset precedence comparison is reported in Tables 12–13 rather than a figure.*
+Figures are generated by the scripts in `results/figures/` from `results/*.csv` / `results/*.json`. Figures 1–5 are OPS-SAT-AD-scoped; Figures 6–7 report the three-dataset external-validation comparisons (Tables 12–13) directly, so the cross-dataset result no longer rests on tables alone. Figures 2, 4, 5 and 7 encode categories redundantly by greyscale/hatch/marker shape and are legible in black-and-white print; Figures 1, 3 and 6 use blue/teal or open/filled-marker encoding with direct labels.
 
 ### Figure 1 — Channel scoping: MCC/Youden's J and the 9→5 funnel
 
 ![Figure 1: Channel scoping](results/figures/fig01_channel_scope.png)
 
-*(a) MCC and Youden's J per channel at the locked hyperparameters (`mixture=False, forgetting=True`). Blue/teal bars = channels retained in the final scope; grey bars = excluded, with the exclusion reason printed beneath each tick. `CADC0890` has the highest point-estimate MCC (0.826) of any channel yet is excluded on sample-size grounds (n=11/14), not weak performance. (b) The 9→5 channel-scoping funnel, identical across three independent re-derivations. These metrics serve channel scoping only and are not a detector benchmark.*
+*(a) MCC and Youden's J per channel at the locked hyperparameters (`mixture=False, forgetting=True`). Filled bars: channels in the final scope; dashed outlines: excluded channels (S structural, U underpowered, C chance-level). Counts under each channel are anomalous / nominal segments. CADC0890 has the highest point-estimate MCC (0.83) but only 3 nominal segments. (b) The 9→5 channel-scoping funnel; stage sizes and removals are derived from the channel table, and the scope is identical in the full, train-only and test-only re-derivations. These metrics serve channel scoping only and are not a detector benchmark.*
 **Reproduces from:** `results/layer2/channel_scope.json`, `results/layer2/bootstrap_ci.csv` — **Script:** `results/figures/fig01_channel_scope.py`
 
 ### Figure 2 — 16-model cross-validation: feature attribution and agreement (OPS-SAT-AD only)
 
 ![Figure 2: Model cross-validation](results/figures/fig02_model_cross_validation.png)
 
-*(a) Normalized feature-importance share (level / diff / diff²) for each of 16 models, sorted by out-of-fold AUC; the dotted line marks the 1/3 uniform share per feature. 15 of 16 models give `level` less than 1/3 (LightMamba is the exception at 0.428), and no model ranks `level` first. (b) Agreement statistics; the binomial and Kendall's W values are nominal because the models share data and labels. This check controls classifier-side bias only, was run on OPS-SAT-AD only, and was not re-run on SMAP/MSL or SMD.*
+*(a) Normalized feature-importance shares (level / diff / diff²) for each of 16 models, sorted by out-of-fold AUC within representation. The dotted line marks the 1/3 uniform share per feature; † marks the one model above it (LightMamba). 15 of 16 models give `level` less than 1/3, and no model ranks `level` first. (b) Number of models ranking each feature first, and agreement statistics recomputed from the shares; the binomial and Kendall's W values are nominal because the models share data and labels. This check controls classifier-side bias only, was run on OPS-SAT-AD only, and was not re-run on SMAP/MSL or SMD.*
 **Reproduces from:** `results/model_cross_validation/feature_attribution_16models.csv`, `results/model_cross_validation/agreement_statistics.json` — **Script:** `results/figures/fig02_model_cross_validation.py`
 
 ### Figure 3 — Quasi-experimental placebo-pool test and triple verification (OPS-SAT-AD)
 
 ![Figure 3: Quasi-experimental comparison](results/figures/fig03_quasi_experimental.png)
 
-*(a) −log₁₀(p_bonferroni), OPS-SAT-AD placebo-pool test. The `level` bars have zero height in every channel because p_bonf is capped at 1.000 (no detectable excess over placebo; not a demonstration of equivalence). Each feature is tested on its own statistic, so bar heights are not effect-size comparisons across features. See Table 12 for the weaker `level` result in SMAP/MSL and SMD. (b) Full / train-only / test-only agreement matrix, OPS-SAT-AD-internal.*
+*(a) −log₁₀(p_bonferroni), OPS-SAT-AD placebo-pool test, 15 tests. The `level` bars have zero height in every channel because p_bonf is capped at 1.000 (no detectable excess over placebo; not a demonstration of equivalence). Each feature is tested on its own statistic, so bar heights are not effect-size comparisons across features; channel type is aliased with sensor family. See Table 12 / Fig. 6 for the weaker `level` result in SMAP/MSL and SMD. (b) Full / train-only / test-only significance-call agreement matrix, OPS-SAT-AD-internal; the framed row is the single disagreement, diagnosed as a power artifact.*
 **Reproduces from:** `results/layer3/placebo_comparison.csv`, `results/layer3/triple_verification_matrix.csv` — **Script:** `results/figures/fig03_quasi_experimental.py`
 
 ### Figure 4 — Structural working model and meta-analytic heterogeneity (OPS-SAT-AD)
 
 ![Figure 4: SCM and heterogeneity](results/figures/fig04_scm_and_heterogeneity.png)
 
-*(a) Descriptive structural working model for OPS-SAT-AD ("Path A"): onset is followed by a transient `diff`/`diff²` variance surge; the `level` node is shown as persistent but confounded, and the "level excluded" annotation refers to OPS-SAT-AD's placebo test only (SMAP/MSL and SMD show weak `level` signal, Table 12). The moderator box (float_noise_suspect vs. quantized) is confounded with sensor family and was not confirmed externally. (b) DerSimonian–Laird heterogeneity (*I²*) across the 5 scoped channels; with k=5 these are descriptive.*
+*(a) Descriptive structural working model for OPS-SAT-AD ("Path A"): onset is followed by a transient `diff`/`diff²` variance surge; the `level` node is shown as persistent but confounded, and the "level excluded" annotation refers to OPS-SAT-AD's placebo test only (SMAP/MSL and SMD show weak `level` signal, Table 12). The moderator box (float_noise_suspect vs. quantized) is confounded with sensor family and was not confirmed externally. (b) DerSimonian–Laird heterogeneity (*I²*) across the 5 scoped channels, for both effect size |d| and significant-segment fraction; with k=5 these are descriptive.*
 **Reproduces from:** `results/layer3/heterogeneity_summary.csv` — **Script:** `results/figures/fig04_scm_and_heterogeneity.py`
 
 ### Figure 5 — Dataset overview and pooled temporal-precedence test (OPS-SAT-AD)
 
 ![Figure 5: Dataset and precedence](results/figures/fig05_dataset_and_precedence.png)
 
-*(a) OPS-SAT-AD dataset composition (segments per channel, anomaly prevalence). (b) Pooled temporal-precedence test as −log₁₀(p), OPS-SAT-AD only; the left and middle bars are `level` vs. `diff` (84.3%) and `level` vs. `diff²` (82.9%). The corresponding SMAP/MSL and SMD results, including the normal-control baseline decomposition, are in Table 13.*
-**Reproduces from:** `data/raw/` (segment metadata), `results/layer3/temporal_precedence.csv` — **Script:** `results/figures/fig05_dataset_and_precedence.py`
+*(a) OPS-SAT-AD dataset composition: segments per channel split into anomalous and nominal, with excluded channels shown in dashed/hatched bars and anomaly prevalence in italics. (b) Share of pairs in which the faster (second-named) feature crosses |z| > 3 first, in anomalous segments and normal-segment controls, for level-vs-diff, level-vs-diff² and diff-vs-diff². The diff-vs-diff² sign fraction and the pooled signed-rank test (Table 9) disagree, so no claim rests on that comparison. The corresponding SMAP/MSL and SMD results, including the normal-control baseline decomposition, are in Table 13 and Fig. 7.*
+**Reproduces from:** `data/raw/` (segment metadata), `results/layer3/temporal_precedence.csv`, `results/layer3/temporal_precedence_normal_control.csv` — **Script:** `results/figures/fig05_dataset_and_precedence.py`
+
+### Figure 6 — Placebo-pool separation across datasets
+
+![Figure 6: Cross-dataset placebo comparison](results/figures/fig06_cross_dataset_placebo.png)
+
+*(a) −log10 adjusted p for `level`, `diff` and `diff²` in OPS-SAT-AD (weakest of five channels, Bonferroni), SMAP/MSL and SMD (pooled, BH-FDR); the axis is broken because SMD p-values saturate. Pooled p-values treat windows as exchangeable and are nominal (§ Stage 1 independence caveat). (b) SMD channel-level breadth: fraction of tested channels significant per feature, with 95% Wilson intervals — the more conservative summary of the same result, showing roughly 1.5× as many channels flagged by the derivative features as by `level`.*
+**Reproduces from:** `results/layer3/placebo_comparison.csv` (OPS-SAT-AD), `results/external_validation/stage1_placebo_pooled_dataset.csv`, `results/external_validation/stage1_channel_level_significance.csv` — **Script:** `results/figures/fig06_cross_dataset_placebo.py`
+
+### Figure 7 — Operator baseline and anomaly-attributable increment
+
+![Figure 7: Precedence ordering and baseline decomposition](results/figures/fig07_precedence_baseline.png)
+
+*(a) Share of `diff`-before-`level` pairs in normal-segment controls (open circles) and anomalous segments (filled circles) with 95% Wilson intervals, for OPS-SAT-AD, SMAP/MSL and SMD. Only OPS-SAT-AD's baseline sits below 50%, which is why only OPS-SAT-AD shows a reversal. (b) The anomalous-minus-normal difference in percentage points with an approximate 95% interval. Both panels are computed from the reported fractions and pair counts, treating pairs as independent, so they are nominal (§ Stage 2). The increment has the same sign in all three datasets but ranges from +3.9 to +40.1 pp; the SMAP/MSL interval spans zero, so that dataset's anomalous-regime result remains undecided.*
+**Reproduces from:** `results/layer3/temporal_precedence_normal_control.csv` (OPS-SAT-AD), `results/external_validation/stage2_temporal_precedence.csv`, `results/external_validation/stage2_baseline_decomposition.csv` — **Script:** `results/figures/fig07_precedence_baseline.py`
 
 ---
 
 ## Results tables
 
-*Tables 1–11 are the OPS-SAT-AD primary-analysis tables; the external-validation tables (12–13) are in the section above.*
+*Tables 1–11 are the OPS-SAT-AD primary-analysis tables; the external-validation tables (12–13) are in the section above, each paired with a figure (Fig. 6, Fig. 7).*
 
 ### Table 1 — Channel scoping decision table (underlies Fig. 1)
 
@@ -668,7 +697,7 @@ Figures are generated by the scripts in `results/figures/` from `results/*.csv` 
 
 AUC is out-of-fold and used only to order models (see [Model Cross-Validation](#model-cross-validation-16-architecturally-diverse-models)).
 
-### Table 3 — Quasi-experimental placebo-pool comparison (OPS-SAT-AD; underlies Fig. 3a)
+### Table 3 — Quasi-experimental placebo-pool comparison (OPS-SAT-AD; underlies Fig. 3a, Fig. 6a)
 
 | Channel | level, p_bonf | diff, p_bonf | diff², p_bonf |
 |---|---|---|---|
@@ -678,7 +707,7 @@ AUC is out-of-fold and used only to order models (see [Model Cross-Validation](#
 | CADC0888 | 1.000 (capped) | 6.92×10⁻⁶ | 3.24×10⁻¹³ |
 | CADC0894 | 1.000 (capped) | 3.89×10⁻⁶ | 1.95×10⁻⁴ |
 
-*One-sided Mann–Whitney U per feature on its own statistic; 15 tests, Bonferroni-corrected. See Table 12 for the SMAP/MSL and SMD equivalents (weaker `level` result).*
+*One-sided Mann–Whitney U per feature on its own statistic; 15 tests, Bonferroni-corrected. See Table 12 / Fig. 6 for the SMAP/MSL and SMD equivalents (weaker `level` result).*
 
 ### Table 4 — Heterogeneity summary (underlies Fig. 4b, OPS-SAT-AD)
 
@@ -758,9 +787,9 @@ AUC is out-of-fold and used only to order models (see [Model Cross-Validation](#
 | level vs. diff² | 70 | 3.2×10⁻⁵ | diff² precedes level in 82.9% of pairs |
 | diff vs. diff² | 161 | 0.368 (n.s.) | no reliable ordering by the signed-rank test |
 
-*See Table 13 for the SMAP/MSL and SMD equivalents (no reversal in normal control).*
+*See Table 13 / Fig. 7 for the SMAP/MSL and SMD equivalents (no reversal in normal control).*
 
-### Table 10 — Normal-segment control: precedence ordering (OPS-SAT-AD only)
+### Table 10 — Normal-segment control: precedence ordering (OPS-SAT-AD only; underlies Fig. 5b)
 
 | Comparison | Regime | n pairs | frac(first precedes second) |
 |---|---|---|---|
@@ -771,7 +800,7 @@ AUC is out-of-fold and used only to order models (see [Model Cross-Validation](#
 | diff vs. diff² | anomalous | 161 | diff 7.5% / diff² **92.5%** |
 | diff vs. diff² | normal | 211 | diff **64.5%** / diff² 35.5% |
 
-*Reporting note on diff vs. diff².* Table 10 gives sign fractions (diff² first in 92.5% of anomalous pairs) while Table 9 gives a signed-rank test on the same comparison (n.s.). The two statistics weight pairs differently: the sign fraction ignores lag magnitude, while the signed-rank test weights by it, and the cross-correlation analysis (§3.4) finds no anomalous-vs-normal difference in lag distribution. We draw **no** claim from the diff-vs-diff² ordering and report both rows descriptively. The reversal pattern in the `level` rows does not replicate in SMAP/MSL or SMD (Table 13).
+*Reporting note on diff vs. diff².* Table 10 gives sign fractions (diff² first in 92.5% of anomalous pairs) while Table 9 gives a signed-rank test on the same comparison (n.s.). The two statistics weight pairs differently: the sign fraction ignores lag magnitude, while the signed-rank test weights by it, and the cross-correlation analysis (§3.4) finds no anomalous-vs-normal difference in lag distribution. We draw **no** claim from the diff-vs-diff² ordering and report both rows descriptively. The reversal pattern in the `level` rows does not replicate in SMAP/MSL or SMD (Table 13, Fig. 7).
 
 <!-- VERIFY before submission: reconcile Table 9 (diff vs diff², n=161, Wilcoxon p=0.368) with Table 10 (diff² first in 92.5% of the same 161 pairs). Check tie handling and the definition of the sign fraction in temporal_precedence*.csv, and replace the reporting note above with the confirmed explanation. -->
 
@@ -789,7 +818,7 @@ AUC is out-of-fold and used only to order models (see [Model Cross-Validation](#
 | CADC0892 | quantized | 1.51×10⁻⁴ | 3.79×10⁻⁵ |
 | CADC0894 | quantized | 1.33×10⁻⁴ | 1.42×10⁻⁵ |
 
-*Tables 12 (placebo-pool comparison across datasets) and 13 (precedence ordering and baseline decomposition) are in [External Validation](#external-validation--generalization-study-smapmsl-smd).*
+*Table 12 (placebo-pool comparison across datasets; underlies Fig. 6) and Table 13 (precedence ordering and baseline decomposition; underlies Fig. 7) are in [External Validation](#external-validation--generalization-study-smapmsl-smd).*
 
 ---
 
@@ -827,12 +856,14 @@ python results/figures/fig02_model_cross_validation.py
 python results/figures/fig03_quasi_experimental.py
 python results/figures/fig04_scm_and_heterogeneity.py
 python results/figures/fig05_dataset_and_precedence.py
+python results/figures/fig06_cross_dataset_placebo.py
+python results/figures/fig07_precedence_baseline.py
 
 # ...or simply:
 make all
 ```
 
-`REPRODUCIBILITY_CHECKLIST.md` documents random seeds, package versions, and expected runtime (CPU-only: ~40 min for OPS-SAT-AD Layers 1–3; the 16-model benchmark is the long pole at ~2–3 hours on CPU / ~25 min on a single GPU; the external-validation pipeline runs in ~15–30 min on CPU, dominated by SMD's 1,064-channel loop).
+`REPRODUCIBILITY_CHECKLIST.md` documents random seeds, package versions, and expected runtime (CPU-only: ~40 min for OPS-SAT-AD Layers 1–3; the 16-model benchmark is the long pole at ~2–3 hours on CPU / ~25 min on a single GPU; the external-validation pipeline runs in ~15–30 min on CPU, dominated by SMD's 1,064-channel loop; Figures 6–7 regenerate in seconds once `results/external_validation/` exists).
 
 ---
 
@@ -842,9 +873,9 @@ Each row states the mitigation and, where it is partial, what remains open.
 
 | Threat | Mitigation | Residual status |
 |---|---|---|
-| **Onset-estimation circularity (OPS-SAT-AD):** onsets come from BOCPD on Kalman innovations, which may favor transient variance changes; placebo pivots are position-matched, not detector-selected | Replication on SMAP/MSL and SMD with ground-truth onsets (Table 12–13) | **Open for OPS-SAT-AD strong-form claims**; the directional claim is supported by onset-independent data |
-| **Non-independence of pooled external tests** (windows nested in channels/machines) | Channel-level counts reported alongside pooled p-values; pooled p-values labeled nominal; confirmatory/exploratory families separated | Cluster-robust re-analysis not yet run ([Planned extensions](#planned-extensions-not-in-this-release)) |
-| **Operator-level advantage of differencing** ("`diff` is just faster") | Normal-segment controls in all three datasets; baseline decomposition (Table 13); analytical baseline stated | Regime-mapping simulation not yet run |
+| **Onset-estimation circularity (OPS-SAT-AD):** onsets come from BOCPD on Kalman innovations, which may favor transient variance changes; placebo pivots are position-matched, not detector-selected | Replication on SMAP/MSL and SMD with ground-truth onsets (Table 12–13, Fig. 6–7) | **Open for OPS-SAT-AD strong-form claims**; the directional claim is supported by onset-independent data |
+| **Non-independence of pooled external tests** (windows nested in channels/machines) | Channel-level counts reported alongside pooled p-values (Fig. 6b); pooled p-values labeled nominal; confirmatory/exploratory families separated | Cluster-robust re-analysis not yet run ([Planned extensions](#planned-extensions-not-in-this-release)) |
+| **Operator-level advantage of differencing** ("`diff` is just faster") | Normal-segment controls in all three datasets; baseline decomposition (Table 13, Fig. 7); analytical baseline stated | Regime-mapping simulation not yet run |
 | **Feature statistics on different scales** (|d| vs. log-variance ratio) | Per-feature rank tests; p-values interpreted as distinguishability from placebo, not cross-feature effect size | Common-scale metric (e.g., AUROC, detection delay) not yet run |
 | **Train/test leakage in channel selection (OPS-SAT-AD)** | Scoping re-run on train-only and test-only splits; identical 5-channel scope in all three passes | Addressed |
 | **Train/test leakage in the placebo-pool result (OPS-SAT-AD)** | §3.7 re-run on train-only/test-only slices; 12/13 decidable comparisons agree, the disagreement diagnosed as a power artifact | Addressed |
@@ -859,7 +890,7 @@ Each row states the mitigation and, where it is partial, what remains open.
 | **Underpowered per-channel testing in SMAP/MSL** | Dataset-pooled and channel-type-stratified tests as the primary design | Addressed; SMAP/MSL precedence result remains underpowered |
 | **Sliding-window onset refinement contaminating the pre-onset baseline (SMAP/MSL; caught during analysis)** | Diagnosed via paired jointly-valid-candidate and window-length-stratification checks; replaced by ground-truth-onset, non-sliding, adaptive-window method; censoring bias ruled out by a 150–5,000-sample sweep | Addressed; full trail in `docs/dev-log/step_external_validation.md` |
 | **Visually trivial point outliers inflating effects in SMAP/MSL** | Triviality filter (>20 nominal-SD exclusion) per Wu & Keogh (2021) | Addressed |
-| **Result being an artifact of OPS-SAT-AD's instrument physics** | Independent replication on SMAP/MSL and SMD | Direction confirmed 3/3; strict specificity and reversal confirmed only in OPS-SAT-AD |
+| **Result being an artifact of OPS-SAT-AD's instrument physics** | Independent replication on SMAP/MSL and SMD (Fig. 6–7) | Direction confirmed 3/3; strict specificity and reversal confirmed only in OPS-SAT-AD |
 
 ---
 
@@ -867,16 +898,16 @@ Each row states the mitigation and, where it is partial, what remains open.
 
 Ordered by their importance for interpreting the results.
 
-1. **Onset-estimation circularity in OPS-SAT-AD.** Onsets are estimated by BOCPD on Kalman innovations, and anomalous onsets are detector-selected while placebo pivots are position-matched resamples. The direction of possible bias (favoring transient variance changes over persistent level shifts) is plausible but is not quantified. Only 178/386 (46.1%) anomalous segments are scoreable, and all Layer 3 results and the 16-model labels are conditional on this subset and estimator. The onset-independent evidence is the SMAP/MSL and SMD replication.
-2. **Pooled external p-values are nominal.** Anomaly windows are nested within channels and machines, so SMD p-values of 10⁻¹⁶⁷ overstate evidence strength. The channel-level counts (97 / 142 / 145 of 1,038 channels for `level` / `diff` / `diff²`) are the more conservative summary and show a gap of roughly 1.5×.
-3. **Much of the external `diff`-first ordering is present in normal controls.** The anomaly-attributable increment is +3.9 pp in SMD and +11.0 pp (n.s.) in SMAP/MSL, versus +40.1 pp in OPS-SAT-AD. Outside OPS-SAT-AD the data are consistent with a large operator-level baseline and a small anomaly-specific component, and cannot rule out that differencing is faster for any local disturbance.
-4. **The strict-specificity claim and the normal-control reversal are OPS-SAT-AD-specific.** `level` retains weak but detectable signal above placebo in SMAP/MSL (p_fdr=0.031) and SMD, and no reversal occurs in either. Non-significance of `level` in OPS-SAT-AD is a failure to reject (p_bonf capped at 1.000), not a demonstrated equivalence.
+1. **Onset-estimation circularity in OPS-SAT-AD.** Onsets are estimated by BOCPD on Kalman innovations, and anomalous onsets are detector-selected while placebo pivots are position-matched resamples. The direction of possible bias (favoring transient variance changes over persistent level shifts) is plausible but is not quantified. Only 178/386 (46.1%) anomalous segments are scoreable, and all Layer 3 results and the 16-model labels are conditional on this subset and estimator. The onset-independent evidence is the SMAP/MSL and SMD replication (Fig. 6–7).
+2. **Pooled external p-values are nominal.** Anomaly windows are nested within channels and machines, so SMD p-values of 10⁻¹⁶⁷ overstate evidence strength (Fig. 6a). The channel-level counts (97 / 142 / 145 of 1,038 channels for `level` / `diff` / `diff²`; Fig. 6b) are the more conservative summary and show a gap of roughly 1.5×.
+3. **Much of the external `diff`-first ordering is present in normal controls.** The anomaly-attributable increment is +3.9 pp in SMD and +11.0 pp (n.s.) in SMAP/MSL, versus +40.1 pp in OPS-SAT-AD (Fig. 7b). Outside OPS-SAT-AD the data are consistent with a large operator-level baseline and a small anomaly-specific component, and cannot rule out that differencing is faster for any local disturbance.
+4. **The strict-specificity claim and the normal-control reversal are OPS-SAT-AD-specific.** `level` retains weak but detectable signal above placebo in SMAP/MSL (p_fdr=0.031) and SMD, and no reversal occurs in either (Fig. 7a). Non-significance of `level` in OPS-SAT-AD is a failure to reject (p_bonf capped at 1.000), not a demonstrated equivalence.
 5. **Feature statistics are not on a common scale.** `level` uses |Cohen's d| and `diff`/`diff²` use log-variance ratios; per-feature rank tests support "distinguishable from placebo" statements, not cross-feature effect-size comparisons.
 6. **The channel-type moderator is confounded with sensor family.** `float_noise_suspect` = magnetometer (3 channels) and `quantized` = photodiode (2 channels in scope) in OPS-SAT-AD, with *I²* of 92–97% for the `diff`/`diff²` effects. The pattern could not be tested in SMAP/MSL (1 of 82 channels) and was not confirmed in SMD (no significant effect; 162 anomaly windows across 17 channels).
 7. **The 16-model cross-validation is a classifier-side check only.** It shares data and onset-derived labels across models, uses a 3-feature design (so "`diff`+`diff²` > `level`" is expected at 2:1 under a uniform-share null), relies on non-independent binomial and Kendall statistics, and has out-of-fold AUCs from placebo pivots that are multiple per normal segment. The LightMamba model is a lightweight non-CUDA substitute for `mamba_ssm`, so its narrower margin should not be over-interpreted. The check was not replicated on SMAP/MSL or SMD, and the labeling-protocol audit was not repeated externally.
 8. **Scope of OPS-SAT-AD analysis.** 5 of 9 channels are excluded for statistical-power reasons (Table 1), so OPS-SAT-AD-scoped claims cover these 5 channels only. CADC0894 has a small anomalous count (n=21 full-data, n=4 in the test-only slice), which limits power in every test-split replication. CADC0874's `diff²` effect is likely under-estimated by the full-window Welch design given its especially short-lived transient; treat its meta-analytic estimate as a conservative lower bound.
 9. **The labeling-protocol audit is undecidable.** No public documentation specifies a quantitative cutting rule, so a non-systematic labeling influence on the onset-position skew (mean position ratio ≈0.569) cannot be excluded.
-10. **The SMAP/MSL anomalous-regime precedence result is underpowered** (n=40, p=0.223) and is described as undecided; SMD shows the same non-reversal pattern at high power and is described as a non-replication. SMD's domain (industrial servers) differs substantially from spacecraft instrumentation and is weighted as supporting evidence.
+10. **The SMAP/MSL anomalous-regime precedence result is underpowered** (n=40, p=0.223, CI spans zero in Fig. 7b) and is described as undecided; SMD shows the same non-reversal pattern at high power and is described as a non-replication. SMD's domain (industrial servers) differs substantially from spacecraft instrumentation and is weighted as supporting evidence.
 11. **The diff-vs-diff² ordering is unresolved** (Table 9 vs. Table 10) and no claim rests on it.
 12. **No detector benchmark.** Detection performance is modest in absolute terms on some channels (CADC0888 and CADC0894 sit well below CADC0874), and no comparison with published OPS-SAT-AD detectors is made; detection results serve channel scoping only.
 
@@ -891,7 +922,7 @@ These would directly address the limitations above and are not part of the resul
 - **Common-scale comparison**: AUROC and detection delay computed identically for `level`, `diff`, `diff²`.
 - **Onset-estimator sensitivity** for OPS-SAT-AD (alternative estimators, or detector-matched placebo pivots).
 - **External model cross-validation**: reduced (2–4 family) replication of the model-diversity check on SMAP/MSL or SMD; official `mamba_ssm` for the SSM family.
-- **Published-baseline comparison** for OPS-SAT-AD detection metrics, and a combined three-dataset precedence figure.
+- **Published-baseline comparison** for OPS-SAT-AD detection metrics.
 
 ---
 
