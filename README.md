@@ -77,51 +77,6 @@ This repository is the code, data-provenance and figure-reproduction companion t
 
 ---
 
-## Fit with RESS and submission package
-
-This work targets **Reliability Engineering & System Safety (RESS)**, whose aims cover methods and applications of automatic fault detection and diagnosis, operator decision-support systems, uncertainty and sensitivity analysis, data analysis, and expert judgement for complex technological systems including space systems, with a stated balance between academic material and practical application.
-
-| RESS scope element | Where this study addresses it |
-|---|---|
-| Automatic fault detection and diagnosis | Onset signatures of labeled anomalies; feature choice for alarm thresholds (Layers 2–3, § Practical implications) |
-| Space systems | OPS-SAT-AD (ESA nanosatellite) and SMAP/MSL (NASA) telemetry; SMD adds an industrial-systems check |
-| Operator decision support | Alarm-feature guidance, instrument-aware sensitivity hypothesis, interface to risk-aware alarm design (Paper 2) |
-| Model and parameter uncertainty | Kalman-filter state estimation, hierarchical shrinkage, BOCPD onset posterior, 200-draw Monte Carlo onset propagation |
-| Sensitivity analysis | Leave-one-channel-out, early-window sensitivity, 150–5,000-sample search-window sweep, train/test/bootstrap re-derivations, 2×2 detector ablation |
-| Data collection and analysis | Three public benchmarks, ground-truth and estimated onsets, triviality filtering, dataset-specific preprocessing |
-| Engineering judgement and expert opinion | Expert-labeled segments (OXI tool) and an audit of the labeling protocol (Layer 3b) |
-
-**Cover-letter positioning (draft).** *This manuscript asks which signal feature should drive alarms on safety-critical space telemetry. Using same-channel placebo designs on three public benchmarks, two of them with ground-truth onsets, it shows that derivative-variance features separate anomaly onsets from placebo more strongly than level, and it introduces a normal-segment control that splits apparent early-warning ordering into an operator baseline and an anomaly-attributable increment. The pipeline propagates onset uncertainty, is verified on train/test splits and with 16 classifiers, and is fully reproducible.*
-
-### Draft abstract (≤200 words; 180 words)
-
-Alarm thresholds for spacecraft telemetry are conventionally set on the signal level, on the premise that an anomaly begins as a mean shift. We test this premise on labeled anomaly onsets in three benchmarks: OPS-SAT-AD (ESA nanosatellite, five analysed channels), SMAP/MSL (82 NASA channels) and SMD (1,064 server channels), using same-channel placebo pivots. In all three datasets, the variance of first and second differences separates onsets from placebo more strongly than level does; the two external datasets carry ground-truth onsets, so this direction does not depend on any onset estimator. A normal-segment control decomposes onset-timing precedence into an operator-level baseline of differencing and an anomaly-attributable increment, which is +40.1 percentage points in OPS-SAT-AD, +11.0 in SMAP/MSL and +3.9 in SMD. Within OPS-SAT-AD, level shows no detectable excess over placebo in any of five channels, and the derivative signature is strongest on float-noise magnetometer channels. Onset uncertainty is propagated by Monte Carlo, and results are verified on train/test splits and with 16 classifiers. The findings motivate derivative-variance features as a first-class alarm feature alongside level, with baseline-aware calibration, for safety-critical monitoring.
-
-### Draft highlights (3–5 bullets, ≤85 characters each)
-
-- Derivative-variance features separate anomaly onsets from placebo in 3 datasets *(79)*
-- Ground-truth onsets in two datasets make the direction estimator-independent *(76)*
-- A normal-segment control splits differencing speed into baseline and anomaly effect *(83)*
-- Anomaly-attributable increment: +40.1, +11.0 and +3.9 pp across the datasets *(76)*
-- Onset-uncertainty, train/test and 16-model checks; every figure reproducible *(76)*
-
-### Keywords (≤7)
-
-Anomaly detection; Spacecraft telemetry; Change-point detection; Alarm design; Placebo test; Onset signature
-
-### Data availability statement (draft)
-
-OPS-SAT-AD, SMAP/MSL (Telemanom release) and SMD (OmniAnomaly release) are public third-party datasets and are obtained through `data/download_*.sh`. Code, onset posteriors, channel scope, all result tables and all figure scripts are deposited at **[repository DOI: TODO]**, in line with the journal's requirement to deposit and cite research data or state why this is not possible.
-
-### Pre-submission checklist
-
-- Manuscript length within the journal's 13,000-word limit; one corresponding author; highlights as a separate editable file; abstract ≤200 words.
-- CRediT author statement; funding statement; competing-interest declaration.
-- Generative-AI disclosure statement if any AI-assisted tool was used in preparing the manuscript, as the journal's policy requires.
-- Every figure provided as a separate file at print resolution; all tables as editable text.
-
----
-
 ## Evidence ladder and claim scope
 
 The claims are graded by how far the evidence travels. Each tier states what is claimed, where it is supported, and the boundary of the claim, so that readers and reviewers can weigh the tiers separately.
