@@ -76,7 +76,7 @@ Four issues surfaced during execution and were corrected; none affect the report
 | GaussianNB | Probabilistic | tabular | 0.900 | 0.051 | 0.446 | 0.503 |
 | *BOCPD (τ\* Youden, Stage-4 reference)* | *Reference (online, probabilistic)* | — | *n/a* | *recall=0.685, FA=0.181* | | |
 
-**16/16 models rank `diff` + `diff²` combined share above `level`.** Zero of 16 models rank `level` as the single top feature. The BOCPD row is a reference point only — it solves a different problem (real-time online change-point detection vs. post-hoc batch classification) and its AUC is not commensurable with the batch classifiers' AUC.
+**16/16 models rank `diff` + `diff²` combined share above `level`.** Zero of 16 models rank `level` as the single top feature. The BOCPD row is a reference point only — it solves a different problem (real-time online change-point detection vs. post-hoc batch classification) and its AUC is not commensurable with the batch classifiers' AUC. It also reports recall/FA at the Youden's-J-optimal threshold τ*, a different operating point from the MCC-locked hyperparameters used throughout `step2_anomaly_detection.md` §3–4 and `docs/METHODS_SUPPLEMENT.md` §3.5, so its pooled recall/FA here should not be compared row-for-row against the per-channel locked-hyperparameter table there.
 
 ### Table 2 — Family-level aggregation (13 inductive-bias families)
 
@@ -105,11 +105,11 @@ Four issues surfaced during execution and were corrected; none affect the report
 | Kendall's coefficient of concordance (*W*) | **0.609** |
 | χ² approximation (df = 2) | χ² = 19.50, *p* < .001 |
 | Models ranking `level` as most important feature | 0 / 16 |
-| Binomial test (H₀: chance rate = 1/3 favor diff/diff²) | *p* = .0015 |
+| Binomial test (H₀: `level` ranked top-1 with probability 1/3, i.e. uniform-ranking chance) | *p* = .0015 |
 | Bootstrap stability, RandomForest (200 resamples) | 100% favor diff+diff² > level |
 | Bootstrap stability, LogisticRegression (200 resamples) | 100% favor diff+diff² > level |
 
-Bootstrap stability was assessed on two representative, architecturally distinct tabular models (tree-ensemble and linear) rather than all 16, for computational tractability — 200 resamples each vs. a much smaller budget (20) that would have been needed to cover all models at equal cost.
+Bootstrap stability was assessed on two representative, architecturally distinct tabular models (tree-ensemble and linear) rather than all 16, for computational tractability — 200 resamples each (400 resample-fits total) vs. the ≈25 resamples per model that an equal total budget spread evenly across all 16 models would have allowed.
 
 ## Interpretation
 
