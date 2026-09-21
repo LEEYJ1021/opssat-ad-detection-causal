@@ -86,9 +86,9 @@ state          x = [level, trend]
 transition     A = [[1, 1], [0, 1]]
 observation    H = [1, 0]
 Q              = diag(0, q_shrunk)
-R_effective    = r_shrunk + quantization_floor   (theta = 0; a Wasserstein/DR-covariance-inflation
-                                                    term "theta" was scoped in an earlier design draft
-                                                    but never implemented — see step2 note)
+R_effective    = r_shrunk + quantization_floor   (a Wasserstein/DR-covariance-inflation term "theta"
+                                                    was scoped in an earlier design draft but never
+                                                    implemented; no downstream stage depends on it)
 ```
 
 This is a signal-processing convenience model, not a physical model of spacecraft attitude or orbital dynamics. Standardized innovations `z_t = (y_t − ŷ_t) / √S_t` from this filter are the sole input to Layer 2 (BOCPD).
