@@ -793,12 +793,6 @@ make all
 
 ---
 
-## Citation
-
-TODO — `CITATION.cff` will be populated with full author list, affiliations, and DOI once the manuscript is accepted and/or an arXiv preprint is posted. In the interim, please cite this repository directly by URL and commit hash.
-
----
-
 ## License
 
 Code in this repository is released under the MIT License (see `LICENSE`). This repository does not redistribute any of the three datasets used; each dataset is governed by its own upstream license and terms of use:
