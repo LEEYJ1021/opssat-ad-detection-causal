@@ -95,9 +95,21 @@ Filtering to `train == 0` retains 62,475 rows (25.9%) and only 51 reliable anoma
 
 **Reading the two undecidable cells.** CADC0894 is already documented (Layer 2 scoping, `step2_anomaly_detection.md` §3–4) as the thinnest-margin included channel; the same limitation resurfaces here as a sample-size floor on the test slice, not a new finding.
 
+**Resolving the 177 vs. 178 segment-count discrepancy.** 126 (train) + 51 (test) = 177 anomalous segments, one fewer than the 178 scoreable anomalous segments reported in the full-data analysis (`step3_causal_analysis.md` §3.1). Checking per channel isolates the difference to a single channel:
+
+| Channel | Full-data (§3.1) | Train + test (B-6 + B-7) | Match? |
+|---|---|---|---|
+| CADC0872 | 42 | 29 + 12 = 41 | **No (−1)** |
+| CADC0873 | 29 | 22 + 7 = 29 | Yes |
+| CADC0874 | 50 | 31 + 19 = 50 | Yes |
+| CADC0888 | 36 | 28 + 8 = 36 | Yes |
+| CADC0894 | 21 | 16 + 5 = 21 | Yes |
+
+The missing segment is CADC0872's, and it corresponds exactly to the single **low-reliability-tier** segment noted in `step3_causal_analysis.md` §3.1 (out of 178 detected segments, 176 are high-tier, 1 medium-tier, 1 low-tier). That segment lacks the `train` partition flag, so it is silently dropped by both the `train == 1` and `train == 0` masks used in B-6/B-7, while it remains present in the unpartitioned, full-data §3.7 result. Because this same segment is already excluded from channel-level aggregation at the low-reliability-tier stage (§3.1), its absence from the train/test partition has no bearing on the significance calls reported above — it is a bookkeeping artifact of the partition flag, not a new finding requiring re-analysis.
+
 ### Summary statement
 
-> Layer 3's headline result — that `level` is a non-specific channel-drift confounder while `diff`/`diff²` are the anomaly-specific signature — reproduces independently when the entire §3.7 placebo-pool procedure is re-run using only training-split segments and, separately, only test-split segments. 12 of 13 decidable (channel × feature) comparisons agree exactly across all three data slices; the sole disagreement (CADC0888 `diff`) is explained by a monotone loss of statistical power in the smallest slice, not an effect reversal; the 2 undecidable cells (CADC0894 `diff`/`diff²` on the test slice) reflect a pre-existing, already-documented sample-size limitation of that channel, not a new one. This closes the same train/test-leakage concern for the causal-signature analysis that `step2_anomaly_detection.md` §4 closed for detection performance.
+> Layer 3's headline result — that `level` is a non-specific channel-drift confounder while `diff`/`diff²` are the anomaly-specific signature — reproduces independently when the entire §3.7 placebo-pool procedure is re-run using only training-split segments and, separately, only test-split segments. 12 of 13 decidable (channel × feature) comparisons agree exactly across all three data slices; the sole disagreement (CADC0888 `diff`) is explained by a monotone loss of statistical power in the smallest slice, not an effect reversal; the 2 undecidable cells (CADC0894 `diff`/`diff²` on the test slice) reflect a pre-existing, already-documented sample-size limitation of that channel, not a new one; and the apparent 177-vs-178 segment-count gap is fully accounted for by a single already-excluded low-reliability-tier CADC0872 segment lacking a train/test partition flag. This closes the same train/test-leakage concern for the causal-signature analysis that `step2_anomaly_detection.md` §4 closed for detection performance.
 
 ---
 
