@@ -15,7 +15,7 @@ BOCPD's onset is a **posterior** over run-lengths, not a point estimate. For eac
 - `diff` — first difference, Welch *t*-test + Cohen's *d* on **squared** values (variance-increase proxy).
 - `diff²` — second difference, same treatment as `diff`.
 
-**Coverage.** Of 386 anomalous segments in the 5 scoped channels, 178 (46.1%) yield a detected onset and a scoreable pre/post window (per-channel: 872 n=42, 873 n=29, 874 n=50, 888 n=36/37, 894 n=21). The remaining 53.9% are excluded — mostly "onset not detected" (203/208), consistent with the channels' known recall (`step2_anomaly_detection.md` §5).
+**Coverage.** Of 386 anomalous segments in the 5 scoped channels, 178 (46.1%) yield a detected onset and a scoreable pre/post window (per-channel: 872 n=42, 873 n=29, 874 n=50, 888 n=36, 894 n=21; 42+29+50+36+21=178). The remaining 53.9% are excluded — mostly "onset not detected" (203/208), consistent with the channels' known recall (`step2_anomaly_detection.md` §5).
 
 **Two corrections applied before channel-level aggregation:**
 
@@ -31,6 +31,8 @@ BOCPD's onset is a **posterior** over run-lengths, not a point estimate. For eac
 | CADC0874 | 50 | 1.161 | 0.92 | 0.151 | 0.120 | 0.190 | 0.280 |
 | CADC0888 | 36 | 0.897–0.924 | 0.54 | 0.428 | 0.203 | 0.334–0.360 | 0.030 |
 | CADC0894 | 21 | 1.086–1.093 | 0.90 | 0.298–0.300 | 0.762 | 0.362–0.374 | 0.714 |
+
+*(The single low-tier segment excluded from channel-level aggregation, per point 2 above, belongs to CADC0872; this is why 41 reliable segments are used here despite 42 detected segments for that channel — see also `step3b_labeling_protocol_revalidation.md`'s reconciliation of the 177/178 count.)*
 
 **Level direction (sign) distribution, corrected:** roughly balanced for four of five channels (CADC0872: 39% positive/61% negative; CADC0873: 31%/69%; CADC0874: 50%/50%; CADC0888: 44%/56%) — i.e., **effect size is large but direction is not consistent**, confirming that a signed pooled estimate for `level` would be misleading. CADC0894 is the exception (76% positive/24% negative).
 
@@ -149,7 +151,7 @@ Standard *I²*-drop (≥ 30 pp) criterion alone misses cases where the pooled po
 | level \|d\| | **CADC0872** | *I²* 65.7% → 0.0% (removal eliminates heterogeneity entirely) |
 | level frac_sig | **CADC0888** | *I²* 82.8% → 0.0% |
 | diff² \|d\| | **CADC0874** | *I²* 93.8% → 0.0%; correlates with CADC0874 having the *lowest* diff² \|d\| (0.190) and *highest* diff² transient_ratio (0.980) of the five channels — Spearman *r* = −1.00 (*n* = 5, exploratory) between transient_ratio and \|d\|, consistent with §3.3(b)'s dilution mechanism most severely affecting the most transient channel |
-| diff/diff² frac_sig | **CADC0894** (relative-shift only; standard *I²*-drop misses this) | removing CADC0894 nearly halves pooled frac_sig (diff: 0.0996 → 0.0168, −64%; diff²: 0.1325 → 0.0415, −69%), but on top of an already-present, orderly hierarchy among the other four channels (diff frac_sig: 872=0.001 < 873=0.003 < 874=0.035 < 888=0.104) — CADC0894 is an extreme point on a continuum, not a categorically separate population |
+| diff/diff² frac_sig | **CADC0894** (relative-shift only; standard *I²*-drop misses this) | removing CADC0894 sharply reduces — well beyond a simple halving — the pooled diff/diff² significance fraction (diff: 0.0996 → 0.0168, −64%; diff²: 0.1325 → 0.0415, −69%), on top of an already-present, orderly hierarchy among the other four channels (diff frac_sig: 872=0.001 < 873=0.003 < 874=0.035 < 888=0.104) — CADC0894 is an extreme point on a continuum, not a categorically separate population |
 
 **Note on CADC0872's diagnosed level |d| outlier (channel-level, not segment-level analysis):** two artifact hypotheses were tested and rejected:
 
