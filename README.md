@@ -28,7 +28,7 @@ This repository is the code, data-provenance and figure-reproduction companion t
 ## Table of Contents
 
 1. [Contribution at a glance](#contribution-at-a-glance)
-2. [Fit with RESS and submission package](#fit-with-ress-and-submission-package)
+2. [Scope and submission package](#scope-and-submission-package)
 3. [Evidence ladder and claim scope](#evidence-ladder-and-claim-scope)
 4. [Storyline of the investigation](#storyline-of-the-investigation)
 5. [Onset provenance of each result](#onset-provenance-of-each-result)
