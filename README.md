@@ -310,23 +310,14 @@ opssat-ad-onset-signatures/
 │   ├── figures/
 │   │   ├── _figstyle.py                             # (new) shared style, CSV loader with column checks, n-assertions, figure_manifest.json
 │   │   ├── fig01_channel_scope.png
-│   │   ├── fig01_channel_scope.py
 │   │   ├── fig02_model_cross_validation.png
-│   │   ├── fig02_model_cross_validation.py
 │   │   ├── fig03_quasi_experimental.png
-│   │   ├── fig03_quasi_experimental.py
 │   │   ├── fig04_scm_and_heterogeneity.png          # file name kept; now the I² panel only
-│   │   ├── fig04_scm_and_heterogeneity.py
 │   │   ├── fig05_dataset_and_precedence.png
-│   │   ├── fig05_dataset_and_precedence.py
 │   │   ├── fig06_cross_dataset_placebo.png
-│   │   ├── fig06_cross_dataset_placebo.py
 │   │   ├── fig06b_coverage_and_pooling_bias.png     # (new)
-│   │   ├── fig06b_coverage_and_pooling_bias.py      # (new)
 │   │   ├── fig06c_coverage_vs_far.png               # (new)
-│   │   ├── fig06c_coverage_vs_far.py                # (new)
-│   │   ├── fig07_precedence_baseline.png
-│   │   └── fig07_precedence_baseline.py
+│   │   └── fig07_precedence_baseline.png
 │   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above (incl. R7–R11)
 │
 ├── results_care_v8/                       # written by care_protocol_v8.py (§11.3, Tables R7–R11)
