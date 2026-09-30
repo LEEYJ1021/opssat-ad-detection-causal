@@ -310,8 +310,7 @@ opssat-ad-onset-signatures/
 │   │   ├── fig06_cross_dataset_placebo.png
 │   │   ├── fig06b_coverage_and_pooling_bias.png
 │   │   ├── fig06c_coverage_vs_far.png
-│   │   ├── fig07_precedence_baseline.png
-│   │   └── figS_fig02_sequence_partial.py, fig07_precedence_baseline.py   # figure scripts not covered by make_pending_figures.py
+│   │   └── fig07_precedence_baseline.png
 │   └── tables/                            # camera-ready LaTeX tables (.tex) mirroring the CSVs above (incl. R3b, R7–R12)
 │
 ├── results_care_v8/                       # written by care_protocol_v8.py (§11.3, Tables R7–R11)
