@@ -31,7 +31,6 @@ This repository is the code, data-provenance and figure-reproduction companion t
 10. [Artifact index](#10-artifact-index)
 11. [Data and code availability](#11-data-and-code-availability)
 12. [References](#12-references)
-13. [Citation and license](#13-citation-and-license)
 
 ---
 
@@ -815,7 +814,6 @@ The study is associational. It does not identify a causal mechanism linking onse
 | Two pairing rules for OPS-SAT-AD precedence (70/224 original, 39/198 canonical) | conclusions rest on the canonical-pair rule | Precedence is a calibration control only (Section 5.11) | crossing-time inputs under a single pairing rule |
 | No documented quantitative segment-cutting rule in OPS-SAT-AD; anomalous onsets skew toward the back half of segments (mean position ratio ≈ 0.569) | labeling provenance is open | Its consequence for the direction is bounded by SMAP/MSL and SMD, which follow different protocols | provenance documentation from the dataset authors |
 
-
 ### 7.2 Conclusion
 
 Across three benchmarks with different platforms, sensors, labeling protocols and onset provenance, derivative-variance features carry at least as much onset information as signal level, `level` adds nothing once they are present, and a fused alarm with a joint-FAR-calibrated threshold adds a measurable but modest coverage gain at matched false-alarm rate. The size of every advantage depends on the placebo, the resampling unit, the statistic definition and the tie convention. The recommendation for practice is to add a derivative-variance channel to the alarm feature set, calibrate on the joint false-alarm rate, and state the estimand, placebo and tie convention behind any reported advantage.
@@ -1151,5 +1149,3 @@ Analysis code, data-provenance scripts, figure source scripts, development logs 
 - von Neumann, J., Kent, R. H., Bellinson, H. R., and Hart, B. I. (1941). The mean square successive difference. *Annals of Mathematical Statistics*, 12(2), 153–162.
 
 ---
-
-License: MIT (see `LICENSE`).
