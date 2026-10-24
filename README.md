@@ -1097,9 +1097,6 @@ opssat-ad-onset-signatures/
 
 The files in `docs/dev-log/` are the research logs kept during development, included verbatim (file names retain the original "causal" wording). `step_external_validation.md` also records the SMAP/MSL sliding-onset scheme that contaminated the pre-onset baseline for windows longer than the baseline (diagnosed by a jointly-valid-candidate check and a window-length stratification, then discarded), the 150 to 5,000-sample search-window sweep (n = 40 → 41) and the consistency-gate results of the re-analysis.
 
-> [!WARNING]
-> **Maintainer note (remove before release).** The manuscript reports three analyses whose scripts and output files are not named in the tree above: (1) **grouped held-out calibration** (5-fold × 10 and leave-one-machine-out; Table 16 held-out columns, Table 16a), (2) the **classical-chart comparison** (Shewhart, CUSUM, EWMA, I-MR and the 26-rule set; Table 16b), and (3) the **joint-FAR threshold table** (Table 16a). Until their script paths and CSV names are added to the tree and to Section 10.1, the claim that this repository reproduces *every* number in the manuscript is not supported. Confirm whether they are produced by `ress_priority_analyses_v5.py` / `run_pending_analyses.py` or live elsewhere, then add the exact paths.
-
 ---
 
 ## 9. Reproducing every number
